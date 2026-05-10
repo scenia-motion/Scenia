@@ -26,7 +26,8 @@ pnpm dev
 ```
 
 The example scripts compile `assembly/index.ts` to `public/main.wasm` and write
-a tiny generated `public/ball.png` before starting Vite.
+a tiny generated `public/ball.png` before starting Vite. AssemblyScript compiler
+options live in `asconfig.json`.
 
 ## Build
 

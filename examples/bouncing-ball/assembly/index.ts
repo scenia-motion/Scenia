@@ -4,8 +4,7 @@ import {
   Sprite,
   Stage,
   getRenderListLength as runtimeGetRenderListLength,
-  getRenderListPtr as runtimeGetRenderListPtr,
-  getRenderListStride as runtimeGetRenderListStride
+  getRenderListPtr as runtimeGetRenderListPtr
 } from "@as3-wasm-runtime/runtime-as/as3";
 
 class Main extends Sprite {
@@ -54,8 +53,4 @@ export function getRenderListPtr(): usize {
 
 export function getRenderListLength(): i32 {
   return runtimeGetRenderListLength();
-}
-
-export function getRenderListStride(): i32 {
-  return runtimeGetRenderListStride();
 }

@@ -12,6 +12,19 @@ TypeScript browser host for Wasm modules built with
 - Read the render list from Wasm memory.
 - Draw bitmap commands to Canvas2D.
 
+## Boundary contract
+
+The host expects Wasm exports named `update(deltaTime)`, `getRenderListPtr()`,
+and `getRenderListLength()`. Render commands are read as 8-field `Float64Array`
+records:
+
+```txt
+[kind, assetId, x, y, rotation, scaleX, scaleY, alpha]
+```
+
+The stride is intentionally a TypeScript constant in this package, so the
+per-frame Wasm API stays small.
+
 ## Minimal usage
 
 ```ts

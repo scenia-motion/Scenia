@@ -4,7 +4,7 @@ import { DisplayObjectContainer } from "./DisplayObjectContainer";
 import { Stage } from "./Stage";
 
 export const RENDER_KIND_BITMAP: i32 = 1;
-export const RENDER_LIST_STRIDE: i32 = 9;
+export const RENDER_LIST_STRIDE: i32 = 8;
 
 const MAX_RENDER_ITEMS: i32 = 1024;
 const renderList = new StaticArray<f64>(MAX_RENDER_ITEMS * RENDER_LIST_STRIDE);
@@ -16,10 +16,6 @@ export function getRenderListPtr(): usize {
 
 export function getRenderListLength(): i32 {
   return renderListLength;
-}
-
-export function getRenderListStride(): i32 {
-  return RENDER_LIST_STRIDE;
 }
 
 export function clearRenderList(): void {
@@ -90,7 +86,6 @@ function collectBitmap(
   unchecked((renderList[offset + 5] = (parentScaleX * bitmap.scaleX) as f64));
   unchecked((renderList[offset + 6] = (parentScaleY * bitmap.scaleY) as f64));
   unchecked((renderList[offset + 7] = (parentAlpha * bitmap.alpha) as f64));
-  unchecked((renderList[offset + 8] = visible ? 1.0 : 0.0));
 
   renderListLength++;
 }

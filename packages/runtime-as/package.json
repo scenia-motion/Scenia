@@ -9,7 +9,7 @@
     "./as3": "./assembly/as3/index.ts"
   },
   "scripts": {
-    "build": "asc assembly/smoke.ts --target release --outFile build/runtime-as-smoke.wasm --exportRuntime"
+    "build": "asc assembly/smoke.ts --config asconfig.json --target release"
   },
   "devDependencies": {
     "assemblyscript": "^0.28.9"

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "prepare-assets": "node scripts/write-ball-png.mjs",
-    "asbuild": "pnpm prepare-assets && asc assembly/index.ts --target release --outFile public/main.wasm --exportRuntime",
+    "asbuild": "pnpm prepare-assets && asc assembly/index.ts --config asconfig.json --target release",
     "build": "pnpm --filter @as3-wasm-runtime/runtime-js build && pnpm asbuild && tsc -p tsconfig.json && vite build",
     "dev": "pnpm --filter @as3-wasm-runtime/runtime-js build && pnpm asbuild && vite --host 0.0.0.0"
   },

@@ -11,6 +11,5 @@ export {
   clearRenderList,
   collectStage,
   getRenderListLength,
-  getRenderListPtr,
-  getRenderListStride
+  getRenderListPtr
 } from "./renderList";

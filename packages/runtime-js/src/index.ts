@@ -1,11 +1,11 @@
-const RENDER_KIND_BITMAP = 1;
+export const RENDER_KIND_BITMAP = 1;
+export const RENDER_LIST_STRIDE = 8;
 
 export interface WasmRuntimeExports extends WebAssembly.Exports {
   memory: WebAssembly.Memory;
   update(deltaTime: number): void;
   getRenderListPtr(): number;
   getRenderListLength(): number;
-  getRenderListStride(): number;
 }
 
 export interface RuntimeAsset {
@@ -31,7 +31,6 @@ export interface RenderCommand {
   scaleX: number;
   scaleY: number;
   alpha: number;
-  visible: boolean;
 }
 
 export function assetIdForPath(path: string): number {
@@ -66,9 +65,10 @@ export class WasmCanvasRuntime {
 
   static async load(options: RuntimeHostOptions): Promise<WasmCanvasRuntime> {
     let wasmModule = await instantiateWasm(options.wasmUrl, options.imports);
+    let runtimeExports = assertRuntimeExports(wasmModule.instance.exports);
     let runtime = new WasmCanvasRuntime(
       options.canvas,
-      wasmModule.instance.exports as WasmRuntimeExports,
+      runtimeExports,
       options.background ?? "#ffffff"
     );
 
@@ -121,7 +121,7 @@ export class WasmCanvasRuntime {
   readRenderList(): RenderCommand[] {
     let ptr = this.exports.getRenderListPtr();
     let length = this.exports.getRenderListLength();
-    let stride = this.exports.getRenderListStride();
+    let stride = RENDER_LIST_STRIDE;
     let memory = new Float64Array(this.exports.memory.buffer, ptr, length * stride);
     let commands: RenderCommand[] = [];
 
@@ -135,8 +135,7 @@ export class WasmCanvasRuntime {
         rotation: memory[offset + 4],
         scaleX: memory[offset + 5],
         scaleY: memory[offset + 6],
-        alpha: memory[offset + 7],
-        visible: memory[offset + 8] !== 0
+        alpha: memory[offset + 7]
       });
     }
 
@@ -155,7 +154,7 @@ export class WasmCanvasRuntime {
 
     for (let i = 0; i < commands.length; i++) {
       let command = commands[i];
-      if (command.kind === RENDER_KIND_BITMAP && command.visible) {
+      if (command.kind === RENDER_KIND_BITMAP) {
         this.drawBitmap(command);
       }
     }
@@ -219,3 +218,20 @@ async function instantiateWasm(
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
+
+function assertRuntimeExports(exports: WebAssembly.Exports): WasmRuntimeExports {
+  if (!(exports.memory instanceof WebAssembly.Memory)) {
+    throw new Error("Wasm module must export memory.");
+  }
+
+  for (let i = 0; i < REQUIRED_FUNCTION_EXPORTS.length; i++) {
+    let name = REQUIRED_FUNCTION_EXPORTS[i];
+    if (typeof exports[name] !== "function") {
+      throw new Error(`Wasm module must export ${name}().`);
+    }
+  }
+
+  return exports as WasmRuntimeExports;
+}
+
+const REQUIRED_FUNCTION_EXPORTS = ["update", "getRenderListPtr", "getRenderListLength"] as const;

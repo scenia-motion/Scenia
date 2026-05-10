@@ -16,3 +16,6 @@ Out of scope for this MVP:
 - SWF parsing
 - Flash player compatibility
 - visual editor tooling
+
+The package contains a tiny typed placeholder export so workspace builds verify
+the TypeScript configuration from the beginning.

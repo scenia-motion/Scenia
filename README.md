@@ -82,10 +82,11 @@ commands to a Canvas2D context.
 The bridge is deliberately small:
 
 - Wasm exports `update(deltaTime)`.
-- Wasm exports `getRenderListPtr()`, `getRenderListLength()`, and
-  `getRenderListStride()`.
+- Wasm exports `getRenderListPtr()` and `getRenderListLength()`.
 - The render list is a `Float64Array` in Wasm memory.
-- Each command currently has 9 slots:
+- JS owns the current stride constant, keeping the per-frame export surface to
+  two render-list functions.
+- Each command currently has 8 slots:
   1. kind (`1` = bitmap)
   2. asset id
   3. x
@@ -109,3 +110,10 @@ id, keeping the MVP free of string marshaling.
 - No full AS3 compiler yet.
 - Canvas2D rendering only.
 - Readability and clear package boundaries are prioritized over completeness.
+
+## Next implementation milestone
+
+The next milestone should make the runtime interactive without expanding into a
+full Flash clone: add a tiny input/event bridge from browser pointer events to
+Wasm display objects. That would exercise hit testing, event dispatch, and JS to
+Wasm calls while keeping the renderer and compiler intentionally small.

@@ -25,15 +25,16 @@ Wasm memory through:
 
 - `getRenderListPtr()`
 - `getRenderListLength()`
-- `getRenderListStride()`
 
-Each render command is currently a 9-field `Float64Array` record:
+The JS host owns the matching stride constant. Each render command is currently
+an 8-field `Float64Array` record:
 
 ```txt
-[kind, assetId, x, y, rotation, scaleX, scaleY, alpha, visible]
+[kind, assetId, x, y, rotation, scaleX, scaleY, alpha]
 ```
 
-Only bitmap commands exist in this MVP.
+Only bitmap commands exist in this MVP. Invisible objects are culled before they
+enter the render list, so no visibility flag crosses the Wasm boundary.
 
 ## Build
 
