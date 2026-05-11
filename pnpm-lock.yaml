@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@as3-wasm-runtime/sketch-host':
+        specifier: workspace:*
+        version: link:packages/sketch-host
       assemblyscript:
         specifier: ^0.28.9
         version: 0.28.17
@@ -20,6 +23,9 @@ importers:
       '@as3-wasm-runtime/runtime-js':
         specifier: workspace:*
         version: link:../../packages/runtime-js
+      '@as3-wasm-runtime/sketch-host':
+        specifier: workspace:*
+        version: link:../../packages/sketch-host
     devDependencies:
       '@as3-wasm-runtime/runtime-as':
         specifier: workspace:*
@@ -30,9 +36,6 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
-      vite:
-        specifier: ^7.1.12
-        version: 7.3.3
 
   packages/compiler: {}
 
@@ -43,6 +46,25 @@ importers:
         version: 0.28.17
 
   packages/runtime-js: {}
+
+  packages/sketch-host:
+    dependencies:
+      '@as3-wasm-runtime/runtime-js':
+        specifier: workspace:*
+        version: link:../runtime-js
+    devDependencies:
+      '@types/node':
+        specifier: ^22.19.1
+        version: 22.19.18
+      assemblyscript:
+        specifier: ^0.28.9
+        version: 0.28.17
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^7.1.12
+        version: 7.3.3(@types/node@22.19.18)
 
 packages:
 
@@ -330,6 +352,9 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@types/node@22.19.18':
+    resolution: {integrity: sha512-9v00a+dn2yWVsYDEunWC4g/TcRKVq3r8N5FuZp7u0SGrPvdN9c2yXI9bBuf5Fl0hNCb+QTIePTn5pJs2pwBOQQ==}
+
   assemblyscript@0.28.17:
     resolution: {integrity: sha512-+S0Y7pwLiJngik0bt63XAswcN3Mu0szjvl2aCRWJ9U+5214e93HIt1waTBGFq0yLa8LJBBziw95BaAs5FNfz5Q==}
     engines: {node: '>=20', npm: '>=10'}
@@ -394,6 +419,9 @@ packages:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
   vite@7.3.3:
     resolution: {integrity: sha512-/4XH147Ui7OGTjg3HbdWe5arnZQSbfuRzdr9Ec7TQi5I7R+ir0Rlc9GIvD4v0XZurELqA035KVXJXpR61xhiTA==}
@@ -592,6 +620,10 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/node@22.19.18':
+    dependencies:
+      undici-types: 6.21.0
+
   assemblyscript@0.28.17:
     dependencies:
       binaryen: 129.0.0-nightly.20260428
@@ -689,7 +721,9 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  vite@7.3.3:
+  undici-types@6.21.0: {}
+
+  vite@7.3.3(@types/node@22.19.18):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.4)
@@ -698,4 +732,5 @@ snapshots:
       rollup: 4.60.3
       tinyglobby: 0.2.16
     optionalDependencies:
+      '@types/node': 22.19.18
       fsevents: 2.3.3

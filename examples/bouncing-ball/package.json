@@ -2,21 +2,20 @@
   "name": "@as3-wasm-runtime/bouncing-ball",
   "version": "0.1.0",
   "private": true,
-  "description": "Vite demo for the experimental AS3-inspired Wasm runtime.",
+  "description": "Sketch using the shared @as3-wasm-runtime/sketch-host Vite shell.",
   "type": "module",
   "scripts": {
     "prepare-assets": "node scripts/write-ball-png.mjs",
-    "asbuild": "pnpm prepare-assets && asc assembly/index.ts --config asconfig.json --target release",
-    "build": "pnpm --filter @as3-wasm-runtime/runtime-js build && pnpm asbuild && tsc -p tsconfig.json && vite build",
-    "dev": "pnpm --filter @as3-wasm-runtime/runtime-js build && pnpm asbuild && vite --host 0.0.0.0"
+    "dev": "pnpm exec as3-sketch dev .",
+    "build": "pnpm exec as3-sketch build ."
   },
   "dependencies": {
-    "@as3-wasm-runtime/runtime-js": "workspace:*"
+    "@as3-wasm-runtime/runtime-js": "workspace:*",
+    "@as3-wasm-runtime/sketch-host": "workspace:*"
   },
   "devDependencies": {
     "@as3-wasm-runtime/runtime-as": "workspace:*",
     "assemblyscript": "^0.28.9",
-    "typescript": "^5.9.3",
-    "vite": "^7.1.12"
+    "typescript": "^5.9.3"
   }
 }

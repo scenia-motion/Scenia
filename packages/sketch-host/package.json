@@ -1,0 +1,31 @@
+{
+  "name": "@as3-wasm-runtime/sketch-host",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared Vite shell and CLI for AssemblyScript sketches (Wasm + Canvas host).",
+  "type": "module",
+  "bin": {
+    "as3-sketch": "./bin/as3-sketch.mjs"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["bin", "dist", "vite.config.mts", "index.html"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@as3-wasm-runtime/runtime-js": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.1",
+    "assemblyscript": "^0.28.9",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
+  }
+}

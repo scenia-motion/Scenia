@@ -1,0 +1,21 @@
+{
+  "wasmUrl": "/main.wasm",
+  "canvas": {
+    "selector": "#stage",
+    "width": 1280,
+    "height": 720
+  },
+  "runtime": {
+    "background": "#101827",
+    "assets": ["ball.png"],
+    "debugPointerQueryParam": "debugPointer"
+  },
+  "assembly": {
+    "entry": "assembly/index.ts",
+    "config": "asconfig.json",
+    "target": "release"
+  },
+  "hooks": {
+    "preCompile": "pnpm run prepare-assets"
+  }
+}
