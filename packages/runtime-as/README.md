@@ -15,7 +15,9 @@ coding environment.
 
 The classes are intentionally small. They model the parts needed by the first
 demo: transform properties, visibility, alpha, parent/child display lists,
-`addChild`, `removeChild`, and `Event.ENTER_FRAME`.
+`addChild`, `removeChild`, and `Event.ENTER_FRAME`. Pointer events bubble along
+the display parent chain (`bubbles` is true on `PointerEvent`; capture phase is
+not implemented yet).
 
 ## Rendering contract
 

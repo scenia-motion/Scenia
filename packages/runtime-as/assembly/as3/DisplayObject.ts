@@ -11,6 +11,10 @@ export class DisplayObject extends EventDispatcher {
 
   parent: DisplayObjectContainer | null = null;
 
+  protected override bubbleParent(): EventDispatcher | null {
+    return this.parent;
+  }
+
   get stage(): Stage | null {
     let node: DisplayObject | null = this;
     while (node != null) {

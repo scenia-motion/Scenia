@@ -12,17 +12,6 @@ import {
   registerAssetDimensions
 } from "@as3-wasm-runtime/runtime-as/as3";
 
-let activeMain: Main | null = null;
-
-function onBallPointerDownGlobal(this: Bitmap, _event: Event): void {
-  let main = activeMain;
-  if (main == null) {
-    return;
-  }
-
-  main.reverseVelocity();
-}
-
 class Main extends Sprite {
   private ball: Bitmap;
   private velocityX: f32 = 170;
@@ -39,11 +28,11 @@ class Main extends Sprite {
 
     this.addChild(this.ball);
     this.addEventListener<Main>(Event.ENTER_FRAME, this.onFrame);
+    this.addEventListener<Main>(PointerEvent.POINTER_DOWN, this.onPointerDown);
   }
 
-  wireInputHandlers(): void {
-    activeMain = this;
-    this.ball.addEventListener<Bitmap>(PointerEvent.POINTER_DOWN, onBallPointerDownGlobal);
+  onPointerDown(_event: Event): void {
+    this.reverseVelocity();
   }
 
   reverseVelocity(): void {
@@ -69,7 +58,6 @@ class Main extends Sprite {
 const stage = new Stage(640, 360);
 let main = new Main();
 stage.addChild(main);
-main.wireInputHandlers();
 bindStage(stage);
 
 export function update(deltaTime: f32): void {

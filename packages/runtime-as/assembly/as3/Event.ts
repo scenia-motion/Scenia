@@ -3,6 +3,7 @@ export class Event {
 
   type: string;
   deltaTime: f32;
+  bubbles: bool = false;
   target: EventDispatcher | null = null;
   currentTarget: EventDispatcher | null = null;
 
@@ -24,6 +25,7 @@ export class PointerEvent extends Event {
 
   constructor(type: string, stageX: f32, stageY: f32, localX: f32, localY: f32) {
     super(type, 0);
+    this.bubbles = true;
     this.stageX = stageX;
     this.stageY = stageY;
     this.localX = localX;
@@ -46,6 +48,10 @@ class ListenerEntry {
 export class EventDispatcher {
   private listeners: Array<ListenerEntry> = new Array<ListenerEntry>();
 
+  protected bubbleParent(): EventDispatcher | null {
+    return null;
+  }
+
   addEventListener<T extends EventDispatcher>(type: string, listener: (this: T, event: Event) => void): void {
     this.listeners.push(new ListenerEntry(type, changetype<EventListener>(listener)));
   }
@@ -60,15 +66,30 @@ export class EventDispatcher {
     }
   }
 
-  dispatchEvent(event: Event): void {
-    event.target = this;
-    event.currentTarget = this;
-
+  private notifyListeners(event: Event): void {
     let snapshot = this.listeners.slice(0);
     for (let i = 0; i < snapshot.length; i++) {
       let entry = snapshot[i];
       if (entry.type == event.type) {
         entry.listener.call(this, event);
+      }
+    }
+  }
+
+  dispatchEvent(event: Event): void {
+    if (event.target == null) {
+      event.target = this;
+    }
+
+    event.currentTarget = this;
+    this.notifyListeners(event);
+
+    if (event.bubbles) {
+      let ancestor = this.bubbleParent();
+      while (ancestor != null) {
+        event.currentTarget = ancestor;
+        ancestor.notifyListeners(event);
+        ancestor = ancestor.bubbleParent();
       }
     }
   }
