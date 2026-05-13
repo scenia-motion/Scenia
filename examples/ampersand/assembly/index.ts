@@ -8,16 +8,18 @@ import {
   Sprite,
 } from "@as3-wasm-runtime/runtime-as/as3";
 
+import {Graphic} from "./Graphic";
+
 
 class Ampersand extends Sprite {
-  private img:Bitmap;
+  private img:Graphic;
 
   constructor() {
     super();
 
-    this.img = new Bitmap("ampersand.png");
-    this.img.x = 0;
-    this.img.y = 0;
+    this.img = new Graphic();
+    this.img.x = 200;
+    this.img.y = 200;
 
     this.addChild(this.img);
     this.addEventListener<Ampersand>(Event.ENTER_FRAME, this.onFrame);
