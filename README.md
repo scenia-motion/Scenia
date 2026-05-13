@@ -164,7 +164,4 @@ id, keeping the MVP free of string marshaling.
 
 ## Next implementation milestone
 
-The next milestone should make the runtime interactive without expanding into a
-full Flash clone: add a tiny input/event bridge from browser pointer events to
-Wasm display objects. That would exercise hit testing, event dispatch, and JS to
-Wasm calls while keeping the renderer and compiler intentionally small.
+The next milestone should add additional simple asset types to the system - namely text and vector graphics via SVG.
