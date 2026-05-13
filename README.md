@@ -1,4 +1,4 @@
-# as3-wasm-runtime
+# atast: as3-wasm-runtime
 
 An experimental browser-based proof of concept for a Flash/ActionScript-3-inspired
 creative coding runtime that compiles user code to WebAssembly with
