@@ -1,10 +1,8 @@
-import { NativeMath } from "~lib/math";
+import { matScratch, pushAffine } from "./affine2d";
 import { Bitmap } from "./Bitmap";
 import { DisplayObjectContainer } from "./DisplayObjectContainer";
 import { Stage } from "./Stage";
 import { lookupAssetHeight, lookupAssetWidth } from "./assetDimensions";
-
-const DEG_TO_RAD: f32 = <f32>NativeMath.PI / 180;
 
 export let lastPointerHitLocalX: f32 = 0;
 export let lastPointerHitLocalY: f32 = 0;
@@ -12,18 +10,19 @@ export let lastPointerHitLocalY: f32 = 0;
 export function hitTestStage(stage: Stage, stageX: f32, stageY: f32): Bitmap | null {
   lastPointerHitLocalX = 0;
   lastPointerHitLocalY = 0;
-  return hitTestContainer(stage, stageX, stageY, 0, 0, 0, 1, 1, true);
+  return hitTestContainer(stage, stageX, stageY, 1, 0, 0, 1, 0, 0, true);
 }
 
 function hitTestContainer(
   container: DisplayObjectContainer,
   stageX: f32,
   stageY: f32,
-  parentX: f32,
-  parentY: f32,
-  parentRotation: f32,
-  parentScaleX: f32,
-  parentScaleY: f32,
+  pa: f32,
+  pb: f32,
+  pc: f32,
+  pd: f32,
+  ptx: f32,
+  pty: f32,
   parentVisible: bool
 ): Bitmap | null {
   let visible = parentVisible && container.visible;
@@ -31,11 +30,25 @@ function hitTestContainer(
     return null;
   }
 
-  let worldX = parentX + container.x * parentScaleX;
-  let worldY = parentY + container.y * parentScaleY;
-  let worldRotation = parentRotation + container.rotation;
-  let worldScaleX = parentScaleX * container.scaleX;
-  let worldScaleY = parentScaleY * container.scaleY;
+  pushAffine(
+    pa,
+    pb,
+    pc,
+    pd,
+    ptx,
+    pty,
+    container.x,
+    container.y,
+    container.rotation,
+    container.scaleX,
+    container.scaleY
+  );
+  let wa = unchecked(matScratch[0]);
+  let wb = unchecked(matScratch[1]);
+  let wc = unchecked(matScratch[2]);
+  let wd = unchecked(matScratch[3]);
+  let wtx = unchecked(matScratch[4]);
+  let wty = unchecked(matScratch[5]);
 
   for (let i = container.numChildren - 1; i >= 0; i--) {
     let child = container.getChildAt(i);
@@ -44,11 +57,12 @@ function hitTestContainer(
         child as DisplayObjectContainer,
         stageX,
         stageY,
-        worldX,
-        worldY,
-        worldRotation,
-        worldScaleX,
-        worldScaleY,
+        wa,
+        wb,
+        wc,
+        wd,
+        wtx,
+        wty,
         visible
       );
       if (hit != null) {
@@ -59,11 +73,12 @@ function hitTestContainer(
         child as Bitmap,
         stageX,
         stageY,
-        worldX,
-        worldY,
-        worldRotation,
-        worldScaleX,
-        worldScaleY,
+        wa,
+        wb,
+        wc,
+        wd,
+        wtx,
+        wty,
         visible
       );
       if (hit != null) {
@@ -79,11 +94,12 @@ function hitTestBitmap(
   bitmap: Bitmap,
   stageX: f32,
   stageY: f32,
-  parentX: f32,
-  parentY: f32,
-  parentRotation: f32,
-  parentScaleX: f32,
-  parentScaleY: f32,
+  pa: f32,
+  pb: f32,
+  pc: f32,
+  pd: f32,
+  ptx: f32,
+  pty: f32,
   parentVisible: bool
 ): Bitmap | null {
   let visible = parentVisible && bitmap.visible;
@@ -97,27 +113,27 @@ function hitTestBitmap(
     return null;
   }
 
-  let worldX = parentX + bitmap.x * parentScaleX;
-  let worldY = parentY + bitmap.y * parentScaleY;
-  let worldRotation = parentRotation + bitmap.rotation;
-  let worldScaleX = parentScaleX * bitmap.scaleX;
-  let worldScaleY = parentScaleY * bitmap.scaleY;
+  pushAffine(pa, pb, pc, pd, ptx, pty, bitmap.x, bitmap.y, bitmap.rotation, bitmap.scaleX, bitmap.scaleY);
+  let wa = unchecked(matScratch[0]);
+  let wb = unchecked(matScratch[1]);
+  let wc = unchecked(matScratch[2]);
+  let wd = unchecked(matScratch[3]);
+  let wtx = unchecked(matScratch[4]);
+  let wty = unchecked(matScratch[5]);
 
-  if (worldScaleX == 0 || worldScaleY == 0) {
+  let det = wa * wd - wb * wc;
+  let adet = det >= 0 ? det : -det;
+  if (adet < 1e-6) {
     return null;
   }
 
-  let dx = stageX - worldX;
-  let dy = stageY - worldY;
-  let radians = -worldRotation * DEG_TO_RAD;
-  let cos = <f32>NativeMath.cos(<f64>radians);
-  let sin = <f32>NativeMath.sin(<f64>radians);
-  let rotatedX = dx * cos - dy * sin;
-  let rotatedY = dx * sin + dy * cos;
-  let localX: f32 = rotatedX / worldScaleX;
-  let localY: f32 = rotatedY / worldScaleY;
+  let invDet: f32 = 1.0 / det;
+  let dx = stageX - wtx;
+  let dy = stageY - wty;
+  let localX: f32 = (wd * dx - wc * dy) * invDet;
+  let localY: f32 = (-wb * dx + wa * dy) * invDet;
 
-  if (localX < 0 || localY < 0 || localX > width || localY > height) {
+  if (localX < 0 || localY < 0 || localX > <f32>width || localY > <f32>height) {
     return null;
   }
 

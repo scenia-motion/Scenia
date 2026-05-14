@@ -15,15 +15,16 @@ TypeScript browser host for Wasm modules built with
 ## Boundary contract
 
 The host expects Wasm exports named `update(deltaTime)`, `getRenderListPtr()`,
-and `getRenderListLength()`. Render commands are read as 8-field `Float64Array`
-records:
+and `getRenderListLength()`. Render commands are read as `Float64Array`
+records (nine `Float64` values per command):
 
 ```txt
-[kind, assetId, x, y, rotation, scaleX, scaleY, alpha]
+[kind, assetId, a, b, c, d, tx, ty, alpha]
 ```
 
-The stride is intentionally a TypeScript constant in this package, so the
-per-frame Wasm API stays small.
+The host applies each bitmap with `setTransform(a, b, c, d, tx, ty)` then
+`drawImage` at `(0, 0)`. The stride is intentionally a TypeScript constant in
+this package, so the per-frame Wasm API stays small.
 
 ## Minimal usage
 

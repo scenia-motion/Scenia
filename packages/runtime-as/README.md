@@ -32,7 +32,7 @@ The JS host owns the matching stride constant. Each render command is currently
 an 8-field `Float64Array` record:
 
 ```txt
-[kind, assetId, x, y, rotation, scaleX, scaleY, alpha]
+[kind, assetId, a, b, c, d, tx, ty, alpha] — full affine per bitmap; host uses `setTransform(a,b,c,d,tx,ty)`.
 ```
 
 Only bitmap commands exist in this MVP. Invisible objects are culled before they

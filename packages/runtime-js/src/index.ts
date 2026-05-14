@@ -1,5 +1,5 @@
 export const RENDER_KIND_BITMAP = 1;
-export const RENDER_LIST_STRIDE = 8;
+export const RENDER_LIST_STRIDE = 9;
 
 /** Wasm `dispatchPointerFromHost` kind argument; must match runtime-as `POINTER_KIND_*`. */
 export const POINTER_KIND_DOWN = 1;
@@ -35,11 +35,13 @@ export interface RuntimeHostOptions {
 export interface RenderCommand {
   kind: number;
   assetId: number;
-  x: number;
-  y: number;
-  rotation: number;
-  scaleX: number;
-  scaleY: number;
+  /** Canvas2D `setTransform(a, b, c, d, e, f)` with e,f as tx,ty */
+  a: number;
+  b: number;
+  c: number;
+  d: number;
+  tx: number;
+  ty: number;
   alpha: number;
 }
 
@@ -157,12 +159,13 @@ export class WasmCanvasRuntime {
       commands.push({
         kind: memory[offset + 0],
         assetId: memory[offset + 1],
-        x: memory[offset + 2],
-        y: memory[offset + 3],
-        rotation: memory[offset + 4],
-        scaleX: memory[offset + 5],
-        scaleY: memory[offset + 6],
-        alpha: memory[offset + 7]
+        a: memory[offset + 2],
+        b: memory[offset + 3],
+        c: memory[offset + 4],
+        d: memory[offset + 5],
+        tx: memory[offset + 6],
+        ty: memory[offset + 7],
+        alpha: memory[offset + 8]
       });
     }
 
@@ -197,9 +200,7 @@ export class WasmCanvasRuntime {
 
     let context = this.context;
     context.save();
-    context.translate(command.x, command.y);
-    context.rotate((command.rotation * Math.PI) / 180);
-    context.scale(command.scaleX, command.scaleY);
+    context.setTransform(command.a, command.b, command.c, command.d, command.tx, command.ty);
     context.globalAlpha = clamp(command.alpha, 0, 1);
     context.drawImage(image, 0, 0);
     context.restore();

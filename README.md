@@ -142,15 +142,16 @@ The bridge is deliberately small:
 - The render list is a `Float64Array` in Wasm memory.
 - JS owns the current stride constant, keeping the per-frame export surface to
   two render-list functions.
-- Each command currently has 8 slots:
+- Each command currently has 9 slots:
   1. kind (`1` = bitmap)
   2. asset id
-  3. x
-  4. y
-  5. rotation in degrees
-  6. scaleX
-  7. scaleY
-  8. alpha
+  3. `a` (Canvas2D `setTransform` / column 1)
+  4. `b` (column 1 row 2)
+  5. `c` (column 2 row 1)
+  6. `d` (column 2 row 2)
+  7. `tx` (translation x)
+  8. `ty` (translation y)
+  9. alpha (applied as `globalAlpha` after the matrix)
 
 Asset ids are deterministic hashes of bitmap paths. `new Bitmap("ball.png")` in
 AssemblyScript and `assetIdForPath("ball.png")` in JavaScript produce the same
