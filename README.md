@@ -14,6 +14,7 @@ feel of AS3 creative coding can be recreated on the modern web:
 - `Stage`
 - `Sprite`
 - `Bitmap`
+- `TextField`
 - `EventDispatcher`
 - `Event.ENTER_FRAME`
 - code-driven animation
@@ -138,24 +139,35 @@ commands to a Canvas2D context.
 The bridge is deliberately small:
 
 - Wasm exports `update(deltaTime)`.
-- Wasm exports `getRenderListPtr()` and `getRenderListLength()`.
-- The render list is a `Float64Array` in Wasm memory.
-- JS owns the current stride constant, keeping the per-frame export surface to
-  two render-list functions.
-- Each command currently has 9 slots:
-  1. kind (`1` = bitmap)
-  2. asset id
-  3. `a` (Canvas2D `setTransform` / column 1)
-  4. `b` (column 1 row 2)
-  5. `c` (column 2 row 1)
-  6. `d` (column 2 row 2)
-  7. `tx` (translation x)
-  8. `ty` (translation y)
-  9. alpha (applied as `globalAlpha` after the matrix)
+- Wasm exports `getRenderListPtr()` and `getRenderListLength()` (float slot count).
+- Sketches with text also export `getRenderStringPtr(index)` for the per-frame
+  string pool.
+- The render list is a contiguous `Float64Array` in Wasm memory. Commands are
+  variable-length; the host reads `kind` and advances by stride:
+  - **Bitmap** (`kind = 1`, 9 slots): asset id + affine + alpha
+  - **Text** (`kind = 2`, 19 slots): display object id, string pool indices,
+    affine + alpha, font metrics, layout flags
 
-Asset ids are deterministic hashes of bitmap paths. `new Bitmap("ball.png")` in
-AssemblyScript and `assetIdForPath("ball.png")` in JavaScript produce the same
-id, keeping the MVP free of string marshaling.
+Bitmap asset ids are deterministic hashes of paths (no string marshaling).
+`TextField` strings are interned each frame and read from Wasm by index.
+
+### TextField (display-only)
+
+```ts
+const label = new TextField();
+label.text = "Score: 0";
+label.x = 20;
+label.y = 20;
+label.fontSize = 24;
+label.color = 0xffffff;
+label.width = 300;
+label.height = 40;
+addChild(label);
+```
+
+Rendering uses Canvas2D `fillText` on the host. There is no text input, rich
+text, or embedded font loading yet. See package READMEs for supported properties
+and layout flags (`multiline`, `wordWrap`).
 
 ## Current constraints
 
@@ -169,4 +181,5 @@ id, keeping the MVP free of string marshaling.
 
 ## Next implementation milestone
 
-The next milestone should add additional simple asset types to the system - namely text and vector graphics via SVG.
+Vector graphics via SVG, plus richer text (input, embedded fonts, and optional
+non-Canvas2D backends).

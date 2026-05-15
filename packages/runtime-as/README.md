@@ -11,6 +11,7 @@ coding environment.
 - `DisplayObjectContainer`
 - `Sprite`
 - `Bitmap`
+- `TextField`
 - `Stage`
 
 The classes are intentionally small. They model the parts needed by the first
@@ -28,15 +29,51 @@ Wasm memory through:
 - `getRenderListPtr()`
 - `getRenderListLength()`
 
-The JS host owns the matching stride constant. Each render command is currently
-an 8-field `Float64Array` record:
+The render list is a contiguous `Float64Array`. Commands are variable-length;
+the host walks the buffer using each record's `kind` field.
+
+**Bitmap** (`kind = 1`, stride 9):
 
 ```txt
-[kind, assetId, a, b, c, d, tx, ty, alpha] — full affine per bitmap; host uses `setTransform(a,b,c,d,tx,ty)`.
+[kind, assetId, a, b, c, d, tx, ty, alpha]
 ```
 
-Only bitmap commands exist in this MVP. Invisible objects are culled before they
-enter the render list, so no visibility flag crosses the Wasm boundary.
+**Text** (`kind = 2`, stride 19):
+
+```txt
+[kind, displayObjectId, textIndex, fontFamilyIndex, fontWeightIndex,
+ a, b, c, d, tx, ty, alpha, fontSize, color, align, width, height, multiline, wordWrap]
+```
+
+String payloads are interned per frame into a small Wasm string pool. The host
+reads them through `getRenderStringPtr(index)` (same AssemblyScript string
+layout as the loader). Invisible objects are culled before they enter the render
+list.
+
+## TextField
+
+Display-only text for Canvas2D rendering on the host:
+
+```ts
+const label = new TextField();
+label.text = "Hello";
+label.x = 20;
+label.y = 20;
+label.fontSize = 24;
+label.color = 0xffffff;
+label.width = 300;
+label.height = 40;
+stage.addChild(label);
+```
+
+Supported properties: `text`, `fontFamily`, `fontSize`, `fontWeight`, `color`,
+`align` (`TextAlign.LEFT` | `CENTER` | `RIGHT`), `width`, `height`, `multiline`,
+`wordWrap`, plus inherited transform/visibility/alpha from `DisplayObject`.
+
+**Limitations:** no text input, caret, selection, rich/HTML text, embedded fonts,
+or non-Canvas2D backends. Font names are passed to the browser as CSS font
+strings only (no asset loading). Sketches that use text must export
+`getRenderStringPtr()` from their Wasm entry module.
 
 ## Build
 

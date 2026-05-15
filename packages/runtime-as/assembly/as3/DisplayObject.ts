@@ -1,6 +1,10 @@
 import { EventDispatcher } from "./Event";
 
+let nextDisplayObjectId: i32 = 1;
+
 export class DisplayObject extends EventDispatcher {
+  readonly id: i32;
+
   x: f32 = 0;
   y: f32 = 0;
   rotation: f32 = 0;
@@ -10,6 +14,11 @@ export class DisplayObject extends EventDispatcher {
   visible: bool = true;
 
   parent: DisplayObjectContainer | null = null;
+
+  constructor() {
+    super();
+    this.id = nextDisplayObjectId++;
+  }
 
   protected override bubbleParent(): EventDispatcher | null {
     return this.parent;

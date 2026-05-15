@@ -10,21 +10,33 @@ TypeScript browser host for Wasm modules built with
 - Load bitmap assets.
 - Call the Wasm `update(dt)` export on every animation frame.
 - Read the render list from Wasm memory.
-- Draw bitmap commands to Canvas2D.
+- Draw bitmap and text commands to Canvas2D.
 
 ## Boundary contract
 
 The host expects Wasm exports named `update(deltaTime)`, `getRenderListPtr()`,
-and `getRenderListLength()`. Render commands are read as `Float64Array`
-records (nine `Float64` values per command):
+and `getRenderListLength()`. Sketches with `TextField` nodes should also export
+`getRenderStringPtr(index)` so the host can resolve interned strings.
+
+Render commands are read from a contiguous `Float64Array`. The host walks the
+buffer by `kind`:
 
 ```txt
-[kind, assetId, a, b, c, d, tx, ty, alpha]
+Bitmap (kind 1): [kind, assetId, a, b, c, d, tx, ty, alpha]
+Text   (kind 2): [kind, displayObjectId, textIndex, fontFamilyIndex, fontWeightIndex,
+                  a, b, c, d, tx, ty, alpha, fontSize, color, align, width, height,
+                  multiline, wordWrap]
 ```
 
-The host applies each bitmap with `setTransform(a, b, c, d, tx, ty)` then
-`drawImage` at `(0, 0)`. The stride is intentionally a TypeScript constant in
-this package, so the per-frame Wasm API stays small.
+Bitmaps use `setTransform` + `drawImage`. Text uses Canvas2D `fillText` with
+`font`, `fillStyle`, `textBaseline = "top"`, and alignment from `TextAlign`.
+Multiline without wrap splits on `\n`; with `wordWrap`, lines are broken using
+`measureText` and an approximate line height of `fontSize * 1.2`. Text is
+clipped to `width` × `height` when both are positive.
+
+**Limitations:** display-only; browser font resolution only; strings are read
+from Wasm each frame (fine for HUD-style labels, not tuned for huge dynamic
+copy yet).
 
 ## Minimal usage
 
