@@ -1,8 +1,8 @@
 {
-  "name": "@as3-wasm-runtime/runtime-js",
+  "name": "@scenia-runtime/runtime-js",
   "version": "0.1.0",
   "private": true,
-  "description": "Browser Canvas2D host for as3-wasm-runtime Wasm modules.",
+  "description": "Browser Canvas2D host for scenia-runtime Wasm modules.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

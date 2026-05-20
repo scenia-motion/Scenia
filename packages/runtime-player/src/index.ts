@@ -9,4 +9,4 @@ export {
   type SketchBundleManifest,
   type SketchBundlePayload,
   type LoadSketchBundleOptions
-} from "@as3-wasm-runtime/runtime-js";
+} from "@scenia-runtime/runtime-js";

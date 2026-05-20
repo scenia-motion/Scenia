@@ -1,5 +1,5 @@
 {
-  "name": "@as3-wasm-runtime/runtime-player",
+  "name": "@scenia-runtime/runtime-player",
   "version": "0.1.0",
   "private": true,
   "description": "Browser player entry point for portable sketch bundles (re-exports runtime-js bundle loader).",
@@ -13,10 +13,10 @@
     }
   },
   "scripts": {
-    "build": "pnpm --filter @as3-wasm-runtime/runtime-js build && tsc -p tsconfig.json && vite build"
+    "build": "pnpm --filter @scenia-runtime/runtime-js build && tsc -p tsconfig.json && vite build"
   },
   "dependencies": {
-    "@as3-wasm-runtime/runtime-js": "workspace:*"
+    "@scenia-runtime/runtime-js": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

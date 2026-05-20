@@ -4,9 +4,19 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(__dirname, "..");
-const bundlePath =
-  process.argv[2] ?? path.join(repoRoot, "builds", "bouncing-ball", "sketch.bundle.json");
+function stripLeadingPassthroughDash(argv) {
+  if (argv[0] === "--") {
+    return argv.slice(1);
+  }
+  return argv;
+}
+
+const bundlePath = stripLeadingPassthroughDash(process.argv.slice(2))[0];
+
+if (bundlePath == null || bundlePath.length === 0) {
+  console.error("Usage: node scripts/smoke-bundle.mjs <path/to/sketch.bundle.json>");
+  process.exit(1);
+}
 
 if (!existsSync(bundlePath)) {
   console.error("Bundle not found: " + bundlePath);

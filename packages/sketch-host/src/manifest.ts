@@ -1,4 +1,4 @@
-import type { RuntimeAsset } from "@as3-wasm-runtime/runtime-js";
+import type { RuntimeAsset } from "@scenia-runtime/runtime-js";
 
 export interface SketchManifest {
   wasmUrl: string;

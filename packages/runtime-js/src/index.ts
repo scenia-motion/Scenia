@@ -362,7 +362,7 @@ export class WasmCanvasRuntime {
         hitAssetId = peek();
       }
 
-      console.log("[as3-wasm-runtime:pointer]", {
+      console.log("[scenia-runtime:pointer]", {
         kind,
         clientX: event.clientX,
         clientY: event.clientY,
@@ -389,7 +389,7 @@ export class WasmCanvasRuntime {
 
     if (this.debugPointer && !this.pointerBridgeLogged) {
       this.pointerBridgeLogged = true;
-      console.log("[as3-wasm-runtime:pointer]", "bridge attached (pointerdown/up/move -> Wasm)");
+      console.log("[scenia-runtime:pointer]", "bridge attached (pointerdown/up/move -> Wasm)");
     }
   }
 

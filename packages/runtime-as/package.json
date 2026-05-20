@@ -1,8 +1,8 @@
 {
-  "name": "@as3-wasm-runtime/runtime-as",
+  "name": "@scenia-runtime/runtime-as",
   "version": "0.1.0",
   "private": true,
-  "description": "AssemblyScript display-list runtime primitives for as3-wasm-runtime.",
+  "description": "AssemblyScript display-list runtime primitives for scenia-runtime.",
   "type": "module",
   "exports": {
     ".": "./assembly/index.ts",

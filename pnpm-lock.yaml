@@ -8,7 +8,7 @@ importers:
 
   .:
     devDependencies:
-      '@as3-wasm-runtime/sketch-host':
+      '@scenia-runtime/sketch-host':
         specifier: workspace:*
         version: link:packages/sketch-host
       assemblyscript:
@@ -33,7 +33,7 @@ importers:
 
   packages/runtime-player:
     dependencies:
-      '@as3-wasm-runtime/runtime-js':
+      '@scenia-runtime/runtime-js':
         specifier: workspace:*
         version: link:../runtime-js
     devDependencies:
@@ -46,7 +46,7 @@ importers:
 
   packages/sketch-host:
     dependencies:
-      '@as3-wasm-runtime/runtime-js':
+      '@scenia-runtime/runtime-js':
         specifier: workspace:*
         version: link:../runtime-js
       chokidar:
@@ -68,14 +68,14 @@ importers:
 
   projects/ampersand:
     dependencies:
-      '@as3-wasm-runtime/runtime-js':
+      '@scenia-runtime/runtime-js':
         specifier: workspace:*
         version: link:../../packages/runtime-js
-      '@as3-wasm-runtime/sketch-host':
+      '@scenia-runtime/sketch-host':
         specifier: workspace:*
         version: link:../../packages/sketch-host
     devDependencies:
-      '@as3-wasm-runtime/runtime-as':
+      '@scenia-runtime/runtime-as':
         specifier: workspace:*
         version: link:../../packages/runtime-as
       assemblyscript:
@@ -84,14 +84,14 @@ importers:
 
   projects/bouncing-ball:
     dependencies:
-      '@as3-wasm-runtime/runtime-js':
+      '@scenia-runtime/runtime-js':
         specifier: workspace:*
         version: link:../../packages/runtime-js
-      '@as3-wasm-runtime/sketch-host':
+      '@scenia-runtime/sketch-host':
         specifier: workspace:*
         version: link:../../packages/sketch-host
     devDependencies:
-      '@as3-wasm-runtime/runtime-as':
+      '@scenia-runtime/runtime-as':
         specifier: workspace:*
         version: link:../../packages/runtime-as
       assemblyscript:
@@ -100,6 +100,22 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+
+  projects/dave-sketch:
+    dependencies:
+      '@scenia-runtime/runtime-js':
+        specifier: workspace:*
+        version: link:../../packages/runtime-js
+      '@scenia-runtime/sketch-host':
+        specifier: workspace:*
+        version: link:../../packages/sketch-host
+    devDependencies:
+      '@scenia-runtime/runtime-as':
+        specifier: workspace:*
+        version: link:../../packages/runtime-as
+      assemblyscript:
+        specifier: ^0.28.9
+        version: 0.28.17
 
 packages:
 

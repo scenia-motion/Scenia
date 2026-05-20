@@ -18,6 +18,6 @@ export default defineConfig({
     minify: false
   },
   resolve: {
-    dedupe: ["@as3-wasm-runtime/runtime-js"]
+    dedupe: ["@scenia-runtime/runtime-js"]
   }
 });

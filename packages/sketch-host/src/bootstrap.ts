@@ -1,4 +1,4 @@
-import { WasmCanvasRuntime } from "@as3-wasm-runtime/runtime-js";
+import { WasmCanvasRuntime } from "@scenia-runtime/runtime-js";
 import type { SketchManifest } from "./manifest.js";
 
 function showFatal(error: unknown): void {

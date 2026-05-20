@@ -5,7 +5,7 @@ import path from "node:path";
 export function buildRuntimePlayerPackage(repoRoot: string): void {
   let r = spawnSync(
     "pnpm",
-    ["--filter", "@as3-wasm-runtime/runtime-player", "build"],
+    ["--filter", "@scenia-runtime/runtime-player", "build"],
     { cwd: repoRoot, stdio: "inherit" }
   );
   if (r.status !== 0) {
@@ -16,7 +16,7 @@ export function buildRuntimePlayerPackage(repoRoot: string): void {
 export function resolveRuntimePlayerBrowserJs(repoRoot: string): string {
   let p = path.join(repoRoot, "packages", "runtime-player", "dist", "browser", "runtime-player.js");
   if (!existsSync(p)) {
-    throw new Error("Missing runtime player bundle at " + p + " — build @as3-wasm-runtime/runtime-player first.");
+    throw new Error("Missing runtime player bundle at " + p + " — build @scenia-runtime/runtime-player first.");
   }
   return p;
 }

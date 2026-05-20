@@ -27,7 +27,7 @@ function sketchVirtualPlugin(sketchRoot: string): Plugin {
   let bootDefaultPath = path.join(__dirname, "src", "boot-default.ts");
 
   return {
-    name: "as3-sketch-virtual",
+    name: "scenia-sketch-virtual",
     resolveId(id) {
       if (id === "virtual:sketch-manifest") {
         return "\0virtual:sketch-manifest";
@@ -52,7 +52,7 @@ function sketchVirtualPlugin(sketchRoot: string): Plugin {
 }
 
 /**
- * `as3-sketch dev` re-runs `asc` and rewrites `public/*.wasm`, but the sketch directory lies
+ * `scenia-sketch dev` re-runs `asc` and rewrites `public/*.wasm`, but the sketch directory lies
  * outside Vite's `root`, so Vite's built-in watcher filters those paths and the dev client
  * never gets a reload signal. We run a dedicated chokidar watcher and call `server.hot.send`
  * ourselves so the browser fetches the new wasm.
@@ -62,7 +62,7 @@ function sketchWasmDevReloadPlugin(sketchRoot: string): Plugin {
   let pubDir = path.join(sketchRoot, "public");
 
   return {
-    name: "as3-sketch-wasm-dev-reload",
+    name: "scenia-sketch-wasm-dev-reload",
     apply: "serve",
     configureServer(server) {
       let manifestAbs = path.resolve(manifestPath);
@@ -87,7 +87,7 @@ function sketchWasmDevReloadPlugin(sketchRoot: string): Plugin {
         debounce = setTimeout(() => {
           debounce = null;
           server.hot.send({ type: "full-reload" });
-          server.config.logger.info(`[as3-sketch] full reload (${reason})`);
+          server.config.logger.info(`[scenia-sketch] full reload (${reason})`);
         }, 100);
       };
 
@@ -133,7 +133,7 @@ function sketchPublicPlugin(sketchRoot: string): Plugin {
   let pub = path.join(sketchRoot, "public");
 
   return {
-    name: "as3-sketch-public",
+    name: "scenia-sketch-public",
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         let pathname = req.url?.split("?")[0] ?? "";
@@ -211,7 +211,7 @@ export default defineConfig(() => {
       outDir: path.join(sketchRoot, "dist")
     },
     resolve: {
-      dedupe: ["@as3-wasm-runtime/runtime-js"]
+      dedupe: ["@scenia-runtime/runtime-js"]
     }
   };
 });

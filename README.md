@@ -1,10 +1,10 @@
-# atast: as3-wasm-runtime
+# Scenia: scenia-runtime
 
 An experimental browser-based proof of concept for a Flash/ActionScript-3-inspired
 creative coding runtime that compiles user code to WebAssembly with
 AssemblyScript.
 
-This project currently lives in the `atast` repository.
+This project lives in the [Scenia](https://github.com/dotloadmovie/scenia) repository.
 
 This is intentionally **not** a Flash emulator. It does not parse SWF files,
 does not target Flash compatibility, and does not attempt to recreate the full
@@ -29,113 +29,135 @@ packages/
   runtime-as/      AssemblyScript display-list primitives compiled into Wasm
   runtime-js/      TypeScript browser host that owns canvas, assets, and drawing
   runtime-player/  Re-export of bundle loader for standalone HTML pages
-  sketch-host/     Shared Vite shell + `as3-sketch` CLI for browser sketches
+  sketch-host/     Shared Vite shell + `scenia-sketch` CLI for browser sketches
   compiler/        Placeholder for a later AS3-like-to-AssemblyScript transform
 projects/
-  <name>/          Sketches (pnpm exec as3-sketch scaffold --help)
+  <name>/          Sketches (pnpm exec scenia-sketch scaffold --help)
   bouncing-ball/   Reference sketch using sketch-host
 builds/
-  <name>/          Standalone static sites from `as3-sketch bundle` (generated)
+  <name>/          Standalone static sites from `scenia-sketch bundle` (generated)
 ```
 
-## Getting started
+## Commands
+
+Run these from the **repository root** after `pnpm install`. Every sketch-specific
+command takes the sketch path as an argument (for example `projects/bouncing-ball`);
+nothing is hard-coded in the root `package.json` scripts.
+
+With pnpm, extra arguments can be passed after `--` or directly after the script
+name — both work:
 
 ```sh
-pnpm install
-pnpm build
-pnpm dev
+pnpm dev projects/bouncing-ball
+pnpm run build:bundle projects/bouncing-ball
+pnpm run build:bundle -- projects/bouncing-ball
 ```
 
-`pnpm dev` runs the bouncing-ball sketch. The same command is also available
-as:
+### Workspace
 
-```sh
-pnpm example:bouncing-ball
-```
+| Command | What it does |
+| --- | --- |
+| `pnpm install` | Install all workspace dependencies. |
+| `pnpm build` | Build every package in the monorepo (`pnpm -r build`). |
+| `pnpm run build:player` | Build only `@scenia-runtime/runtime-player` (and its `runtime-js` dependency). |
 
-### Portable bundle + standalone player (MVP)
+### Sketch development (browser + Vite)
 
-Sketches still use **Vite for day-to-day dev** (`pnpm run sketch dev …`). For a
-portable static folder (`index.html`, bundle JSON, and `runtime-player.js`) that
-any static host can serve:
+| Command | What it does |
+| --- | --- |
+| `pnpm dev <sketch-dir>` | Shorthand for `pnpm run sketch dev <sketch-dir>`. Compiles Wasm, watches AssemblyScript sources, starts the shared Vite dev server. |
+| `pnpm run sketch dev <sketch-dir>` | Same as above. |
+| `pnpm run sketch build <sketch-dir>` | Production Vite build for the sketch (output under the sketch’s `dist/`). |
+| `pnpm run sketch dev <sketch-dir> -- --port 5174` | Dev server with extra Vite flags (anything after the second `--` goes to Vite). |
 
-```sh
-pnpm run build:bundle
-pnpm run preview:bundle
-```
+**From inside a sketch directory** (e.g. `projects/bouncing-ball/`), the sketch’s
+own `package.json` provides the same workflow relative to `.`:
 
-`build:bundle` compiles `projects/bouncing-ball`, writes `sketch.bundle.json`
-(JSON with base64 wasm and assets), copies `runtime-player.js`, writes
-`index.html` into `builds/bouncing-ball/`, and runs a small smoke check.
+| Command | What it does |
+| --- | --- |
+| `pnpm dev` | `scenia-sketch dev .` |
+| `pnpm build` | `scenia-sketch build .` |
 
-`preview:bundle` serves that folder with Vite (static dev server) so you can
-open the standalone page in a browser.
+Some sketches define extra scripts (for example `prepare-assets` on bouncing-ball);
+see that sketch’s `package.json`.
 
-Build a portable site for another sketch (default output: `builds/<folder-name>/`):
+### Portable bundle + standalone player
 
-```sh
-pnpm run sketch -- bundle projects/ampersand
-```
+Produces a static folder (`index.html`, `sketch.bundle.json`, `runtime-player.js`)
+suitable for any static host. Default output: `builds/<sketch-folder-name>/`.
 
-Or choose any output directory (absolute or relative to your shell cwd):
-
-```sh
-pnpm run sketch -- bundle projects/ampersand --out /tmp/ampersand-site
-```
+| Command | What it does |
+| --- | --- |
+| `pnpm run build:bundle <sketch-dir>` | Bundle the sketch, write the standalone site, run a smoke check on `sketch.bundle.json`. Optional: `--out <dir>` or `-o <dir>`. |
+| `pnpm run sketch -- bundle <sketch-dir>` | Bundle only (no smoke check). Optional: `--out <dir>`. |
+| `pnpm run sketch -- bundle <sketch-dir> --out /tmp/my-site` | Bundle to a custom directory. |
+| `pnpm run preview:bundle <build-dir>` | Serve a build folder with Vite. Optional: `--port 5180` (default `5175`). |
+| `pnpm run smoke:bundle <path/to/sketch.bundle.json>` | Validate an existing bundle JSON (wasm header, assets, manifest). |
 
 **MVP limitations:** JSON + base64 only (large files inflate size); no
 compression or binary container; assets must be listed in `sketch.json`
 `runtime.assets`; host extensions (`host/main.ts`) are not included in the
 bundle (canvas-only bootstrap).
 
-### Sketches (`sketch-host` + `as3-sketch`)
+### Scaffold a new sketch
+
+| Command | What it does |
+| --- | --- |
+| `pnpm run sketch -- scaffold <slug>` | Create `projects/<slug>/` with `sketch.json`, `assembly/index.ts`, `asconfig.json`, and a workspace `package.json`. Runs `pnpm install` unless `--no-install`. |
+| `pnpm exec scenia-sketch scaffold <slug> --width 1280 --height 720` | Same, with explicit dimensions. |
+| `pnpm exec scenia-sketch scaffold --help` | Full scaffold options. |
+
+After scaffolding: `pnpm run sketch dev projects/<slug>`.
+
+### `scenia-sketch` CLI reference
+
+`pnpm run sketch` is an alias for `pnpm exec scenia-sketch`. Subcommands:
+
+```txt
+scenia-sketch dev [sketch-directory] [-- ...vite-args]
+scenia-sketch build [sketch-directory] [-- ...vite-args]
+scenia-sketch bundle [sketch-directory] [--out|-o <directory>]
+scenia-sketch scaffold <slug> [--width <n>] [--height <n>] [--description <text>]
+```
+
+Set `SKETCH_ROOT` to an absolute sketch path to ignore the `[sketch-directory]`
+argument. `scenia-sketch --help` prints usage and examples.
+
+## Getting started
+
+```sh
+pnpm install
+pnpm build
+pnpm dev projects/bouncing-ball
+```
+
+Open the URL Vite prints (typically `http://localhost:5173`). For a portable
+static build and local preview:
+
+```sh
+pnpm run build:bundle projects/bouncing-ball
+pnpm run preview:bundle builds/bouncing-ball
+```
+
+### Sketches (`sketch-host` + `scenia-sketch`)
 
 Sketches avoid duplicating Vite boilerplate: one shared package
-(`@as3-wasm-runtime/sketch-host`) owns the dev server, HTML shell, Wasm output
+(`@scenia-runtime/sketch-host`) owns the dev server, HTML shell, Wasm output
 location (`public/` under the sketch), and `vite build`. Each sketch directory
 carries `sketch.json` (the sketch manifest), AssemblyScript sources + `asconfig.json`,
-`public/` assets, and optionally a **host extension** (see below).
-
-From the repository root (after `pnpm install`):
-
-```sh
-pnpm run sketch dev projects/bouncing-ball
-pnpm run sketch build projects/bouncing-ball
-pnpm run sketch -- bundle projects/bouncing-ball
-```
-
-Scaffold a new empty sketch (creates `projects/<slug>/` with `sketch.json`,
-`assembly/index.ts` bound to an empty `Stage`, and `asconfig.json`):
-
-```sh
-pnpm run sketch -- scaffold my-sketch
-pnpm exec as3-sketch scaffold my-sketch --width 1280 --height 720
-```
-
-After writing the files the scaffolder runs `pnpm install` from the repo root
-so the new workspace package picks up its `workspace:*` dependencies. Pass
-`--no-install` to skip that step (e.g. for offline or CI use).
-
-`pnpm run sketch scaffold …` and `pnpm run sketch -- scaffold …` behave the same
-(the CLI ignores a leading `--` inserted by `pnpm exec`). See
-`pnpm exec as3-sketch scaffold --help`.
-
-Extra Vite flags go after `--`:
-
-```sh
-pnpm run sketch dev projects/bouncing-ball -- --port 5174
-```
+`public/` assets, and optionally a **host extension** (see below). See **Commands**
+above for the full list of dev, build, bundle, and scaffold invocations.
 
 **Default shell:** `index.html` is only charset, viewport, an empty title, and
 a module entry—no layout chrome. The default bootstrap creates a canvas with id
 `#stage` (or uses the one from `sketch.json` `canvas.selector`) and loads
-`WasmCanvasRuntime` from `@as3-wasm-runtime/runtime-js` using manifest fields
+`WasmCanvasRuntime` from `@scenia-runtime/runtime-js` using manifest fields
 `wasmUrl`, `runtime.assets`, `runtime.background`, and optional
 `runtime.debugPointerQueryParam`.
 
 **Host extension (escape hatch):** If `host/main.ts` exists under the sketch
 root, it is used as the app entry instead of the default bootstrap. Import
-`bootstrapFromManifest` from `@as3-wasm-runtime/sketch-host`, import
+`bootstrapFromManifest` from `@scenia-runtime/sketch-host`, import
 `virtual:sketch-manifest`, add any HTML/CSS/DOM or extra bindings there, then
 call `bootstrapFromManifest(manifest)`. Optional `host/main.css` (or other
 modules) can be imported from that file. Remove `host/main.ts` to fall back to
@@ -144,7 +166,7 @@ the canvas-only default for the same Wasm and manifest.
 ## First-pass architecture
 
 User code is authored in AssemblyScript today. It imports small AS3-inspired
-runtime classes from `@as3-wasm-runtime/runtime-as`, creates a display tree, and
+runtime classes from `@scenia-runtime/runtime-as`, creates a display tree, and
 exports an `update(dt)` function:
 
 ```ts

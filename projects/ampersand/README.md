@@ -1,6 +1,6 @@
 # ampersand
 
-Empty sketch created with `as3-sketch scaffold`. AssemblyScript entry:
+Empty sketch created with `scenia-sketch scaffold`. AssemblyScript entry:
 `assembly/index.ts` (bound `Stage` with no display objects yet).
 
 ## Run

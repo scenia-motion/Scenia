@@ -1,7 +1,7 @@
-# @as3-wasm-runtime/runtime-js
+# @scenia-runtime/runtime-js
 
 TypeScript browser host for Wasm modules built with
-`@as3-wasm-runtime/runtime-as`.
+`@scenia-runtime/runtime-as`.
 
 ## Responsibilities
 
@@ -41,7 +41,7 @@ copy yet).
 ## Minimal usage
 
 ```ts
-import { WasmCanvasRuntime } from "@as3-wasm-runtime/runtime-js";
+import { WasmCanvasRuntime } from "@scenia-runtime/runtime-js";
 
 const runtime = await WasmCanvasRuntime.load({
   canvas: document.querySelector("canvas")!,
@@ -59,10 +59,10 @@ image loaded by JavaScript without string marshaling.
 ## Portable sketch bundles
 
 `loadSketchBundle` loads a JSON bundle (base64 wasm + assets) produced by
-`as3-sketch bundle`. Use this for standalone HTML pages without Vite:
+`scenia-sketch bundle`. Use this for standalone HTML pages without Vite:
 
 ```ts
-import { loadSketchBundle } from "@as3-wasm-runtime/runtime-js";
+import { loadSketchBundle } from "@scenia-runtime/runtime-js";
 
 await loadSketchBundle("./sketch.bundle.json", {
   mount: document.getElementById("app")!
@@ -75,5 +75,5 @@ output layout.
 ## Build
 
 ```sh
-pnpm --filter @as3-wasm-runtime/runtime-js build
+pnpm --filter @scenia-runtime/runtime-js build
 ```

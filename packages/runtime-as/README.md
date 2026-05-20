@@ -1,4 +1,4 @@
-# @as3-wasm-runtime/runtime-as
+# @scenia-runtime/runtime-as
 
 AssemblyScript runtime primitives for the experimental AS3-inspired creative
 coding environment.
@@ -78,7 +78,7 @@ strings only (no asset loading). Sketches that use text must export
 ## Build
 
 ```sh
-pnpm --filter @as3-wasm-runtime/runtime-as build
+pnpm --filter @scenia-runtime/runtime-as build
 ```
 
 The build compiles a small smoke module to verify the source package. The

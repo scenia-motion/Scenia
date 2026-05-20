@@ -84,7 +84,7 @@ function ensureSketchHostBuilt(): void {
 function buildRuntimeJs(repoRoot: string): void {
   let r = spawnSync(
     "pnpm",
-    ["--filter", "@as3-wasm-runtime/runtime-js", "build"],
+    ["--filter", "@scenia-runtime/runtime-js", "build"],
     { cwd: repoRoot, stdio: "inherit" }
   );
   if (r.status !== 0) {
@@ -127,7 +127,7 @@ function startAssemblySourceWatcher(sketchRoot: string, manifest: SketchJson): (
   let linkedRuntimeAs = path.join(
     sketchRoot,
     "node_modules",
-    "@as3-wasm-runtime",
+    "@scenia-runtime",
     "runtime-as",
     "assembly"
   );
@@ -142,9 +142,9 @@ function startAssemblySourceWatcher(sketchRoot: string, manifest: SketchJson): (
     }
     debounceTimer = setTimeout(() => {
       debounceTimer = null;
-      console.log("[as3-sketch] Recompiling AssemblyScript…");
+      console.log("[scenia-sketch] Recompiling AssemblyScript…");
       if (!compileAssembly(sketchRoot, manifest, [])) {
-        console.error("[as3-sketch] asc failed; fix errors to update wasm.");
+        console.error("[scenia-sketch] asc failed; fix errors to update wasm.");
       }
     }, 150);
   };
@@ -163,7 +163,7 @@ function startAssemblySourceWatcher(sketchRoot: string, manifest: SketchJson): (
   };
 }
 
-/** `pnpm exec as3-sketch -- <args>` and `pnpm run sketch -- <args>` insert a leading `--`. */
+/** `pnpm exec scenia-sketch -- <args>` and `pnpm run sketch -- <args>` insert a leading `--`. */
 function stripLeadingPassthroughDash(argv: string[]): string[] {
   if (argv[0] === "--") {
     return argv.slice(1);
@@ -172,20 +172,20 @@ function stripLeadingPassthroughDash(argv: string[]): string[] {
 }
 
 function printHelp(): void {
-  console.log(`as3-sketch — shared Vite shell for AssemblyScript sketches
+  console.log(`scenia-sketch — shared Vite shell for AssemblyScript sketches
 
 Usage:
-  as3-sketch dev [sketch-directory] [-- ...vite-args]
-  as3-sketch build [sketch-directory] [-- ...vite-args]
-  as3-sketch bundle [sketch-directory] [--out|-o <directory>]
-  as3-sketch scaffold <slug> [--width <n>] [--height <n>] [--description <text>]
+  scenia-sketch dev [sketch-directory] [-- ...vite-args]
+  scenia-sketch build [sketch-directory] [-- ...vite-args]
+  scenia-sketch bundle [sketch-directory] [--out|-o <directory>]
+  scenia-sketch scaffold <slug> [--width <n>] [--height <n>] [--description <text>]
 
 Examples:
-  as3-sketch dev projects/bouncing-ball
-  as3-sketch bundle projects/bouncing-ball
-  as3-sketch bundle projects/bouncing-ball --out /tmp/my-deploy
-  as3-sketch scaffold particle-field --width 1280 --height 720
-  pnpm --filter @as3-wasm-runtime/sketch-host exec -- as3-sketch dev .
+  scenia-sketch dev projects/bouncing-ball
+  scenia-sketch bundle projects/bouncing-ball
+  scenia-sketch bundle projects/bouncing-ball --out /tmp/my-deploy
+  scenia-sketch scaffold particle-field --width 1280 --height 720
+  pnpm --filter @scenia-runtime/sketch-host exec -- scenia-sketch dev .
 
 Environment:
   SKETCH_ROOT   If set, absolute path to the sketch root (CLI sketch-directory is ignored).
@@ -195,7 +195,7 @@ Notes:
   Optional host extension: sketch-directory/host/main.ts (see repository README).
   \`bundle\` compiles wasm, builds the portable player, and writes index.html,
   sketch.bundle.json, and runtime-player.js into --out (default: builds/<sketch-folder-name>/).
-  Run \`as3-sketch scaffold --help\` for scaffold details.
+  Run \`scenia-sketch scaffold --help\` for scaffold details.
 `);
 }
 
@@ -259,8 +259,8 @@ async function runBundle(sketchRoot: string, outDirExplicit: string | undefined)
   let title = readBundleTitleFromOutdir(outDir);
   writeStandalonePlayerIndexHtml(outDir, title);
 
-  console.log("[as3-sketch] Standalone build at " + outDir);
-  console.log("[as3-sketch] Wrote " + bundlePath);
+  console.log("[scenia-sketch] Standalone build at " + outDir);
+  console.log("[scenia-sketch] Wrote " + bundlePath);
 }
 
 async function main(): Promise<void> {

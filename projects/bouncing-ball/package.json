@@ -1,20 +1,20 @@
 {
-  "name": "@as3-wasm-runtime/bouncing-ball",
+  "name": "@scenia-runtime/bouncing-ball",
   "version": "0.1.0",
   "private": true,
-  "description": "Sketch using the shared @as3-wasm-runtime/sketch-host Vite shell.",
+  "description": "Sketch using the shared @scenia-runtime/sketch-host Vite shell.",
   "type": "module",
   "scripts": {
     "prepare-assets": "node scripts/write-ball-png.mjs",
-    "dev": "pnpm exec as3-sketch dev .",
-    "build": "pnpm exec as3-sketch build ."
+    "dev": "pnpm exec scenia-sketch dev .",
+    "build": "pnpm exec scenia-sketch build ."
   },
   "dependencies": {
-    "@as3-wasm-runtime/runtime-js": "workspace:*",
-    "@as3-wasm-runtime/sketch-host": "workspace:*"
+    "@scenia-runtime/runtime-js": "workspace:*",
+    "@scenia-runtime/sketch-host": "workspace:*"
   },
   "devDependencies": {
-    "@as3-wasm-runtime/runtime-as": "workspace:*",
+    "@scenia-runtime/runtime-as": "workspace:*",
     "assemblyscript": "^0.28.9",
     "typescript": "^5.9.3"
   }

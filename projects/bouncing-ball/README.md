@@ -1,11 +1,11 @@
 # Bouncing Ball example
 
 Sketch for the experimental AS3-inspired Wasm runtime, served through the
-shared `@as3-wasm-runtime/sketch-host` Vite shell.
+shared `@scenia-runtime/sketch-host` Vite shell.
 
 The AssemblyScript source in `assembly/index.ts` creates a `Stage`, a `Sprite`,
 a `Bitmap("ball.png")`, and an `Event.ENTER_FRAME` listener. The browser loads
-the generated Wasm module via `WasmCanvasRuntime` (`@as3-wasm-runtime/runtime-js`)
+the generated Wasm module via `WasmCanvasRuntime` (`@scenia-runtime/runtime-js`)
 and draws the render list to Canvas2D.
 
 Sketch-specific browser UI (title, copy, layout, styling) lives under `host/`
@@ -21,7 +21,7 @@ From the repository root:
 
 ```sh
 pnpm install
-pnpm example:bouncing-ball
+pnpm dev projects/bouncing-ball
 ```
 
 Or using the shared CLI from the repo root:
@@ -36,7 +36,7 @@ Or from this directory:
 pnpm dev
 ```
 
-The dev script runs `as3-sketch` (the `sketch-host` bin shim compiles that
+The dev script runs `scenia-sketch` (the `sketch-host` bin shim compiles that
 package on demand if `dist/` is missing), then `hooks.preCompile` from
 `sketch.json` (`pnpm run prepare-assets`), compiles AssemblyScript to
 `public/main.wasm`, starts `asc --watch`, then Vite. AssemblyScript options live

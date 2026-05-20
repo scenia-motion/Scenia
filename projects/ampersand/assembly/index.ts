@@ -13,7 +13,7 @@ import {
   registerAssetDimensions,
   setStagePointerListener,
   Sprite,
-} from "@as3-wasm-runtime/runtime-as/as3";
+} from "@scenia-runtime/runtime-as/as3";
 
 import { Graphic } from "./Graphic";
 

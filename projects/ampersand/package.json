@@ -1,19 +1,19 @@
 {
-  "name": "@as3-wasm-runtime/ampersand",
+  "name": "@scenia-runtime/ampersand",
   "version": "0.1.0",
   "private": true,
-  "description": "Empty sketch scaffolded with as3-sketch (see repository README).",
+  "description": "Empty sketch scaffolded with scenia-sketch (see repository README).",
   "type": "module",
   "scripts": {
-    "dev": "pnpm exec as3-sketch dev .",
-    "build": "pnpm exec as3-sketch build ."
+    "dev": "pnpm exec scenia-sketch dev .",
+    "build": "pnpm exec scenia-sketch build ."
   },
   "dependencies": {
-    "@as3-wasm-runtime/runtime-js": "workspace:*",
-    "@as3-wasm-runtime/sketch-host": "workspace:*"
+    "@scenia-runtime/runtime-js": "workspace:*",
+    "@scenia-runtime/sketch-host": "workspace:*"
   },
   "devDependencies": {
-    "@as3-wasm-runtime/runtime-as": "workspace:*",
+    "@scenia-runtime/runtime-as": "workspace:*",
     "assemblyscript": "^0.28.9"
   }
 }

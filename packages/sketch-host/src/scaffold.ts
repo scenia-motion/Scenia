@@ -44,10 +44,10 @@ export interface ScaffoldOptions {
 }
 
 export function printScaffoldHelp(): void {
-  console.log(`as3-sketch scaffold — new empty sketch under projects/<slug>
+  console.log(`scenia-sketch scaffold — new empty sketch under projects/<slug>
 
 Usage:
-  as3-sketch scaffold <slug> [--width <px>] [--height <px>] [--description <text>]
+  scenia-sketch scaffold <slug> [--width <px>] [--height <px>] [--description <text>]
 
 Options:
   -w, --width          Stage / canvas width (default 640)
@@ -117,7 +117,7 @@ function assemblySource(width: number, height: number): string {
   bindStage,
   getRenderListLength as runtimeGetRenderListLength,
   getRenderListPtr as runtimeGetRenderListPtr
-} from "@as3-wasm-runtime/runtime-as/as3";
+} from "@scenia-runtime/runtime-as/as3";
 
 const stage = new Stage(${width}, ${height});
 bindStage(stage);
@@ -161,23 +161,23 @@ function packageJson(slug: string, description: string): string {
   let desc =
     description.length > 0
       ? description
-      : `Empty sketch scaffolded with as3-sketch (see repository README).`;
+      : `Empty sketch scaffolded with scenia-sketch (see repository README).`;
   let o = {
-    name: "@as3-wasm-runtime/" + slug,
+    name: "@scenia-runtime/" + slug,
     version: "0.1.0",
     private: true,
     description: desc,
     type: "module",
     scripts: {
-      dev: "pnpm exec as3-sketch dev .",
-      build: "pnpm exec as3-sketch build ."
+      dev: "pnpm exec scenia-sketch dev .",
+      build: "pnpm exec scenia-sketch build ."
     },
     dependencies: {
-      "@as3-wasm-runtime/runtime-js": "workspace:*",
-      "@as3-wasm-runtime/sketch-host": "workspace:*"
+      "@scenia-runtime/runtime-js": "workspace:*",
+      "@scenia-runtime/sketch-host": "workspace:*"
     },
     devDependencies: {
-      "@as3-wasm-runtime/runtime-as": "workspace:*",
+      "@scenia-runtime/runtime-as": "workspace:*",
       assemblyscript: "^0.28.9"
     }
   };
@@ -201,7 +201,7 @@ const ASCONFIG_JSON = `{
 function readme(slug: string): string {
   return `# ${slug}
 
-Empty sketch created with \`as3-sketch scaffold\`. AssemblyScript entry:
+Empty sketch created with \`scenia-sketch scaffold\`. AssemblyScript entry:
 \`assembly/index.ts\` (bound \`Stage\` with no display objects yet).
 
 ## Run

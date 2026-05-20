@@ -10,7 +10,7 @@ import {
   getRenderListLength as runtimeGetRenderListLength,
   getRenderListPtr as runtimeGetRenderListPtr,
   registerAssetDimensions
-} from "@as3-wasm-runtime/runtime-as/as3";
+} from "@scenia-runtime/runtime-as/as3";
 
 class Main extends Sprite {
   private ball: Bitmap;

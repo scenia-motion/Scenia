@@ -1,5 +1,5 @@
 {
-  "name": "@as3-wasm-runtime/compiler",
+  "name": "@scenia-runtime/compiler",
   "version": "0.1.0",
   "private": true,
   "description": "Placeholder compiler package for future AS3-like syntax transforms.",

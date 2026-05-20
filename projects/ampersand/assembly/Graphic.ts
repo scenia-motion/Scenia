@@ -1,4 +1,4 @@
-import {Sprite, Bitmap} from "@as3-wasm-runtime/runtime-as/as3";
+import {Sprite, Bitmap} from "@scenia-runtime/runtime-as/as3";
 
 export class Graphic extends Sprite {
   private img:Bitmap;

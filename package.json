@@ -1,21 +1,20 @@
 {
-  "name": "as3-wasm-runtime",
+  "name": "scenia-runtime",
   "version": "0.1.0",
   "private": true,
   "description": "Experimental ActionScript-3-inspired creative coding runtime that targets WebAssembly through AssemblyScript.",
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
-    "build:bundle": "pnpm run sketch -- bundle projects/bouncing-ball --out builds/bouncing-ball && node scripts/smoke-bundle.mjs builds/bouncing-ball/sketch.bundle.json",
-    "build:player": "pnpm --filter @as3-wasm-runtime/runtime-player build",
-    "dev": "pnpm --filter @as3-wasm-runtime/bouncing-ball dev",
-    "example:bouncing-ball": "pnpm --filter @as3-wasm-runtime/bouncing-ball dev",
-    "preview:bundle": "vite --host 0.0.0.0 --port 5175 builds/bouncing-ball",
-    "sketch": "pnpm exec as3-sketch",
+    "build:bundle": "node scripts/build-bundle.mjs",
+    "build:player": "pnpm --filter @scenia-runtime/runtime-player build",
+    "dev": "pnpm run sketch dev",
+    "preview:bundle": "node scripts/preview-bundle.mjs",
+    "sketch": "pnpm exec scenia-sketch",
     "smoke:bundle": "node scripts/smoke-bundle.mjs"
   },
   "devDependencies": {
-    "@as3-wasm-runtime/sketch-host": "workspace:*",
+    "@scenia-runtime/sketch-host": "workspace:*",
     "assemblyscript": "^0.28.9",
     "typescript": "^5.9.3",
     "vite": "^7.1.12"

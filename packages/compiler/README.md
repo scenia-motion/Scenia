@@ -1,9 +1,9 @@
-# @as3-wasm-runtime/compiler
+# @scenia-runtime/compiler
 
 Placeholder package for a future compiler layer.
 
 The first phase of this experiment uses AssemblyScript directly. Example code
-imports AS3-inspired classes from `@as3-wasm-runtime/runtime-as` and compiles
+imports AS3-inspired classes from `@scenia-runtime/runtime-as` and compiles
 that AssemblyScript source to WebAssembly with `asc`.
 
 Later, this package may transform AS3-like syntax into AssemblyScript so user

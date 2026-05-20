@@ -1,8 +1,8 @@
-import { bootstrapFromManifest } from "@as3-wasm-runtime/sketch-host";
+import { bootstrapFromManifest } from "@scenia-runtime/sketch-host";
 import manifest from "virtual:sketch-manifest";
 //import "./main.css";
 
-document.title = "as3-wasm-runtime: bouncing ball";
+document.title = "scenia-runtime: bouncing ball";
 
 let app = document.createElement("main");
 app.id = "app";
@@ -12,7 +12,7 @@ panel.className = "panel";
 
 let eyebrow = document.createElement("p");
 eyebrow.className = "eyebrow";
-eyebrow.textContent = "as3-wasm-runtime";
+eyebrow.textContent = "scenia-runtime";
 
 let heading = document.createElement("h1");
 heading.textContent = "Bouncing Ball";

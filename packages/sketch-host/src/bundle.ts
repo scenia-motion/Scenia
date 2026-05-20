@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import path from "node:path";
-import type { SketchBundle, SketchBundlePayload } from "@as3-wasm-runtime/runtime-js";
+import type { SketchBundle, SketchBundlePayload } from "@scenia-runtime/runtime-js";
 import type { SketchManifest } from "./manifest.js";
 
 const RUNTIME_VERSION = "0.1.0";
