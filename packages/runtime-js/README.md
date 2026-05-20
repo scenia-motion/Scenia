@@ -69,8 +69,8 @@ await loadSketchBundle("./sketch.bundle.json", {
 });
 ```
 
-See the repository root README for `pnpm run build:bundle` and
-`examples/player/`.
+See the repository root README for `pnpm run build:bundle` and the `builds/`
+output layout.
 
 ## Build
 

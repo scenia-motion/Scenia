@@ -44,7 +44,7 @@ export interface ScaffoldOptions {
 }
 
 export function printScaffoldHelp(): void {
-  console.log(`as3-sketch scaffold — new empty sketch under examples/<slug>
+  console.log(`as3-sketch scaffold — new empty sketch under projects/<slug>
 
 Usage:
   as3-sketch scaffold <slug> [--width <px>] [--height <px>] [--description <text>]
@@ -208,7 +208,7 @@ Empty sketch created with \`as3-sketch scaffold\`. AssemblyScript entry:
 
 \`\`\`sh
 pnpm install   # from repository root, once
-pnpm run sketch dev examples/${slug}
+pnpm run sketch dev projects/${slug}
 \`\`\`
 
 Or from this directory: \`pnpm dev\`.
@@ -216,7 +216,7 @@ Or from this directory: \`pnpm dev\`.
 ## Build
 
 \`\`\`sh
-pnpm run sketch build examples/${slug}
+pnpm run sketch build projects/${slug}
 \`\`\`
 
 See the repository root README for \`sketch.json\`, optional \`host/main.ts\`, and the default canvas shell.
@@ -248,8 +248,8 @@ export function runScaffold(cwd: string, argv: string[]): void {
 
   let opts = parseScaffoldArgv(argv);
   let repoRoot = findRepoRoot(cwd);
-  let examplesDir = path.join(repoRoot, "examples");
-  let sketchDir = path.join(examplesDir, opts.slug);
+  let projectsDir = path.join(repoRoot, "projects");
+  let sketchDir = path.join(projectsDir, opts.slug);
 
   if (existsSync(sketchDir)) {
     throw new Error("Directory already exists: " + sketchDir);
@@ -269,9 +269,9 @@ export function runScaffold(cwd: string, argv: string[]): void {
 
   if (opts.install) {
     runPnpmInstall(repoRoot);
-    console.log("Next: pnpm run sketch dev examples/" + opts.slug);
+    console.log("Next: pnpm run sketch dev projects/" + opts.slug);
   } else {
     console.log("Skipped pnpm install (--no-install).");
-    console.log("Next: pnpm install && pnpm run sketch dev examples/" + opts.slug);
+    console.log("Next: pnpm install && pnpm run sketch dev projects/" + opts.slug);
   }
 }

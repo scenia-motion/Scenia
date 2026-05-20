@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const bundlePath =
-  process.argv[2] ?? path.join(repoRoot, "examples", "bouncing-ball", "dist", "sketch.bundle.json");
+  process.argv[2] ?? path.join(repoRoot, "builds", "bouncing-ball", "sketch.bundle.json");
 
 if (!existsSync(bundlePath)) {
   console.error("Bundle not found: " + bundlePath);

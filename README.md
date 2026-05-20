@@ -31,10 +31,11 @@ packages/
   runtime-player/  Re-export of bundle loader for standalone HTML pages
   sketch-host/     Shared Vite shell + `as3-sketch` CLI for browser sketches
   compiler/        Placeholder for a later AS3-like-to-AssemblyScript transform
-examples/
+projects/
   <name>/          Sketches (pnpm exec as3-sketch scaffold --help)
   bouncing-ball/   Reference sketch using sketch-host
-  player/          Standalone page that loads sketch.bundle.json (no Vite app)
+builds/
+  <name>/          Standalone static sites from `as3-sketch bundle` (generated)
 ```
 
 ## Getting started
@@ -45,7 +46,7 @@ pnpm build
 pnpm dev
 ```
 
-`pnpm dev` runs the bouncing-ball example. The same command is also available
+`pnpm dev` runs the bouncing-ball sketch. The same command is also available
 as:
 
 ```sh
@@ -55,24 +56,31 @@ pnpm example:bouncing-ball
 ### Portable bundle + standalone player (MVP)
 
 Sketches still use **Vite for day-to-day dev** (`pnpm run sketch dev …`). For a
-single-file export that any static HTML page can load:
+portable static folder (`index.html`, bundle JSON, and `runtime-player.js`) that
+any static host can serve:
 
 ```sh
 pnpm run build:bundle
 pnpm run preview:bundle
 ```
 
-`build:bundle` compiles `examples/bouncing-ball`, writes
-`dist/sketch.bundle.json` (JSON with base64 wasm and assets), copies the bundle
-and `runtime-player.js` into `examples/player/`, and runs a small smoke check.
+`build:bundle` compiles `projects/bouncing-ball`, writes `sketch.bundle.json`
+(JSON with base64 wasm and assets), copies `runtime-player.js`, writes
+`index.html` into `builds/bouncing-ball/`, and runs a small smoke check.
 
-`preview:bundle` serves `examples/player/index.html`, which loads the bundle via
-`loadSketchBundle("./sketch.bundle.json", { mount })`.
+`preview:bundle` serves that folder with Vite (static dev server) so you can
+open the standalone page in a browser.
 
-Build a bundle for another sketch:
+Build a portable site for another sketch (default output: `builds/<folder-name>/`):
 
 ```sh
-pnpm run sketch -- bundle examples/ampersand
+pnpm run sketch -- bundle projects/ampersand
+```
+
+Or choose any output directory (absolute or relative to your shell cwd):
+
+```sh
+pnpm run sketch -- bundle projects/ampersand --out /tmp/ampersand-site
 ```
 
 **MVP limitations:** JSON + base64 only (large files inflate size); no
@@ -91,12 +99,12 @@ carries `sketch.json` (the sketch manifest), AssemblyScript sources + `asconfig.
 From the repository root (after `pnpm install`):
 
 ```sh
-pnpm run sketch dev examples/bouncing-ball
-pnpm run sketch build examples/bouncing-ball
-pnpm run sketch -- bundle examples/bouncing-ball
+pnpm run sketch dev projects/bouncing-ball
+pnpm run sketch build projects/bouncing-ball
+pnpm run sketch -- bundle projects/bouncing-ball
 ```
 
-Scaffold a new empty sketch (creates `examples/<slug>/` with `sketch.json`,
+Scaffold a new empty sketch (creates `projects/<slug>/` with `sketch.json`,
 `assembly/index.ts` bound to an empty `Stage`, and `asconfig.json`):
 
 ```sh
@@ -115,7 +123,7 @@ so the new workspace package picks up its `workspace:*` dependencies. Pass
 Extra Vite flags go after `--`:
 
 ```sh
-pnpm run sketch dev examples/bouncing-ball -- --port 5174
+pnpm run sketch dev projects/bouncing-ball -- --port 5174
 ```
 
 **Default shell:** `index.html` is only charset, viewport, an empty title, and

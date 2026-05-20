@@ -27,7 +27,7 @@ pnpm example:bouncing-ball
 Or using the shared CLI from the repo root:
 
 ```sh
-pnpm run sketch dev examples/bouncing-ball
+pnpm run sketch dev projects/bouncing-ball
 ```
 
 Or from this directory:
