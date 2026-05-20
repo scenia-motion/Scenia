@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import chokidar from "chokidar";
 import { buildSketchBundle } from "./bundle.js";
+import {
+  buildRuntimePlayerPackage,
+  copyRuntimePlayerIntoOutdir,
+  readBundleTitleFromOutdir,
+  writeStandalonePlayerIndexHtml
+} from "./deploy-bundle.js";
 import { runScaffold } from "./scaffold.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -43,14 +49,35 @@ function readSketchManifest(sketchRoot: string): SketchJson {
   return JSON.parse(readFileSync(manifestPath, "utf8")) as SketchJson;
 }
 
-function ensureSketchHostBuilt(): void {
-  let marker = path.join(pkgRoot, "dist", "index.js");
-  if (existsSync(marker)) {
-    return;
+function maxSourceMtimeMs(dir: string): number {
+  let max = 0;
+  for (let ent of readdirSync(dir, { withFileTypes: true })) {
+    let p = path.join(dir, ent.name);
+    if (ent.isDirectory()) {
+      max = Math.max(max, maxSourceMtimeMs(p));
+    } else if (ent.isFile() && /\.(ts|mts)$/.test(ent.name)) {
+      max = Math.max(max, statSync(p).mtimeMs);
+    }
   }
-  let r = spawnSync("pnpm", ["exec", "tsc", "-p", "tsconfig.json"], { cwd: pkgRoot, stdio: "inherit" });
-  if (r.status !== 0) {
-    process.exit(r.status ?? 1);
+  return max;
+}
+
+function sketchHostBuildStale(distCli: string): boolean {
+  let srcRoot = path.join(pkgRoot, "src");
+  if (!existsSync(srcRoot)) {
+    return false;
+  }
+  let newestSrc = maxSourceMtimeMs(srcRoot);
+  return newestSrc > statSync(distCli).mtimeMs;
+}
+
+function ensureSketchHostBuilt(): void {
+  let distCli = path.join(pkgRoot, "dist", "cli.js");
+  if (!existsSync(distCli) || sketchHostBuildStale(distCli)) {
+    let r = spawnSync("pnpm", ["exec", "tsc", "-p", "tsconfig.json"], { cwd: pkgRoot, stdio: "inherit" });
+    if (r.status !== 0) {
+      process.exit(r.status ?? 1);
+    }
   }
 }
 
@@ -150,12 +177,13 @@ function printHelp(): void {
 Usage:
   as3-sketch dev [sketch-directory] [-- ...vite-args]
   as3-sketch build [sketch-directory] [-- ...vite-args]
-  as3-sketch bundle [sketch-directory]
+  as3-sketch bundle [sketch-directory] [--out|-o <directory>]
   as3-sketch scaffold <slug> [--width <n>] [--height <n>] [--description <text>]
 
 Examples:
-  as3-sketch dev examples/bouncing-ball
-  as3-sketch bundle examples/bouncing-ball
+  as3-sketch dev projects/bouncing-ball
+  as3-sketch bundle projects/bouncing-ball
+  as3-sketch bundle projects/bouncing-ball --out /tmp/my-deploy
   as3-sketch scaffold particle-field --width 1280 --height 720
   pnpm --filter @as3-wasm-runtime/sketch-host exec -- as3-sketch dev .
 
@@ -165,7 +193,8 @@ Environment:
 Notes:
   sketch.json is the sketch manifest (wasm URL, canvas, assets, assembly paths).
   Optional host extension: sketch-directory/host/main.ts (see repository README).
-  \`bundle\` compiles wasm and writes dist/sketch.bundle.json (portable JSON + base64).
+  \`bundle\` compiles wasm, builds the portable player, and writes index.html,
+  sketch.bundle.json, and runtime-player.js into --out (default: builds/<sketch-folder-name>/).
   Run \`as3-sketch scaffold --help\` for scaffold details.
 `);
 }
@@ -183,17 +212,55 @@ function parseArgs(argv: string[]): { cmd: "dev" | "build"; sketchPath: string; 
   return { cmd: cmd as "dev" | "build", sketchPath, viteArgs };
 }
 
-async function runBundle(sketchRoot: string): Promise<void> {
+/** Arguments after the \`bundle\` subcommand (already stripped of a leading \`--\`). */
+function parseBundleArgv(argv: string[]): { sketchPath: string; outDir: string | undefined } {
+  let sketchPath = ".";
+  let outDir: string | undefined;
+  for (let i = 0; i < argv.length; i++) {
+    let a = argv[i];
+    if (a === "--out" || a === "-o") {
+      outDir = argv[++i];
+      if (outDir == null || outDir.length === 0) {
+        throw new Error("Missing value for " + a);
+      }
+      continue;
+    }
+    if (a === "--help" || a === "-h") {
+      printHelp();
+      process.exit(0);
+    }
+    if (a.startsWith("-")) {
+      throw new Error("Unknown bundle option " + JSON.stringify(a));
+    }
+    if (sketchPath !== ".") {
+      throw new Error("Unexpected extra argument " + JSON.stringify(a));
+    }
+    sketchPath = a;
+  }
+  return { sketchPath, outDir };
+}
+
+async function runBundle(sketchRoot: string, outDirExplicit: string | undefined): Promise<void> {
   ensureSketchHostBuilt();
   let manifest = readSketchManifest(sketchRoot);
   let repoRoot = findRepoRoot(sketchRoot);
 
-  buildRuntimeJs(repoRoot);
+  let outDir =
+    outDirExplicit != null && outDirExplicit.length > 0
+      ? path.resolve(process.cwd(), outDirExplicit)
+      : path.join(repoRoot, "builds", path.basename(sketchRoot));
+
+  buildRuntimePlayerPackage(repoRoot);
   runPreCompile(sketchRoot, manifest.hooks?.preCompile);
   runAsc(sketchRoot, manifest, []);
 
-  let outFile = buildSketchBundle(sketchRoot);
-  console.log("[as3-sketch] Wrote " + outFile);
+  let bundlePath = buildSketchBundle(sketchRoot, { outFile: path.join(outDir, "sketch.bundle.json") });
+  copyRuntimePlayerIntoOutdir(repoRoot, outDir);
+  let title = readBundleTitleFromOutdir(outDir);
+  writeStandalonePlayerIndexHtml(outDir, title);
+
+  console.log("[as3-sketch] Standalone build at " + outDir);
+  console.log("[as3-sketch] Wrote " + bundlePath);
 }
 
 async function main(): Promise<void> {
@@ -204,17 +271,23 @@ async function main(): Promise<void> {
   }
   let head = argv[0];
   if (head === "bundle") {
-    let sketchPath = argv.length >= 2 ? argv[1] : ".";
+    let parsed: { sketchPath: string; outDir: string | undefined };
+    try {
+      parsed = parseBundleArgv(argv.slice(1));
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : error);
+      process.exit(1);
+    }
     let sketchRoot =
       process.env.SKETCH_ROOT != null && process.env.SKETCH_ROOT.length > 0
         ? path.resolve(process.env.SKETCH_ROOT)
-        : path.resolve(process.cwd(), sketchPath);
+        : path.resolve(process.cwd(), parsed.sketchPath);
     if (!existsSync(path.join(sketchRoot, "sketch.json"))) {
       console.error("No sketch.json in " + sketchRoot);
       process.exit(1);
     }
     try {
-      await runBundle(sketchRoot);
+      await runBundle(sketchRoot, parsed.outDir);
     } catch (error) {
       console.error(error instanceof Error ? error.message : error);
       process.exit(1);

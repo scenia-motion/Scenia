@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm --filter @as3-wasm-runtime/runtime-js build && tsc -p tsconfig.json && vite build && node scripts/copy-to-example.mjs"
+    "build": "pnpm --filter @as3-wasm-runtime/runtime-js build && tsc -p tsconfig.json && vite build"
   },
   "dependencies": {
     "@as3-wasm-runtime/runtime-js": "workspace:*"

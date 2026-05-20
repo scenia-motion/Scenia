@@ -7,7 +7,7 @@ Empty sketch created with `as3-sketch scaffold`. AssemblyScript entry:
 
 ```sh
 pnpm install   # from repository root, once
-pnpm run sketch dev examples/ampersand
+pnpm run sketch dev projects/ampersand
 ```
 
 Or from this directory: `pnpm dev`.
@@ -15,7 +15,7 @@ Or from this directory: `pnpm dev`.
 ## Build
 
 ```sh
-pnpm run sketch build examples/ampersand
+pnpm run sketch build projects/ampersand
 ```
 
 See the repository root README for `sketch.json`, optional `host/main.ts`, and the default canvas shell.

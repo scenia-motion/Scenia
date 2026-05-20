@@ -82,4 +82,5 @@ pnpm --filter @as3-wasm-runtime/runtime-as build
 ```
 
 The build compiles a small smoke module to verify the source package. The
-package also acts as an AssemblyScript source dependency for examples.
+package also acts as an AssemblyScript source dependency for sketches under
+`projects/`.

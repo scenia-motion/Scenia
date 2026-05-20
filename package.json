@@ -6,18 +6,19 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
-    "build:bundle": "pnpm run sketch -- bundle examples/bouncing-ball && pnpm --filter @as3-wasm-runtime/runtime-player build && node scripts/stage-player-example.mjs && node scripts/smoke-bundle.mjs",
+    "build:bundle": "pnpm run sketch -- bundle projects/bouncing-ball --out builds/bouncing-ball && node scripts/smoke-bundle.mjs builds/bouncing-ball/sketch.bundle.json",
     "build:player": "pnpm --filter @as3-wasm-runtime/runtime-player build",
     "dev": "pnpm --filter @as3-wasm-runtime/bouncing-ball dev",
     "example:bouncing-ball": "pnpm --filter @as3-wasm-runtime/bouncing-ball dev",
-    "preview:bundle": "pnpm --filter @as3-wasm-runtime/player-example preview",
+    "preview:bundle": "vite --host 0.0.0.0 --port 5175 builds/bouncing-ball",
     "sketch": "pnpm exec as3-sketch",
     "smoke:bundle": "node scripts/smoke-bundle.mjs"
   },
   "devDependencies": {
     "@as3-wasm-runtime/sketch-host": "workspace:*",
     "assemblyscript": "^0.28.9",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
   },
   "packageManager": "pnpm@10.11.0"
 }
