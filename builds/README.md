@@ -21,3 +21,5 @@ pnpm run preview:bundle -- builds/<sketch-folder-name>
 ```
 
 By default, per-sketch subfolders under `builds/` are listed in the repository `.gitignore` so generated bundles stay local; remove those patterns if you want to commit deployable artifacts.
+
+For the public demo gallery, bundles are built in CI (and locally via `pnpm run build:pages`) from the allowlist in [`site/demos.json`](../site/demos.json), then copied into `_site/builds/` by `scripts/assemble-pages.mjs`. You do not need to commit `builds/*/` for GitHub Pages deployment.

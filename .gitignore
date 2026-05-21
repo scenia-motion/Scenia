@@ -2,6 +2,7 @@ node_modules/
 dist/
 build/
 .vite/
+_site/
 
 # Portable bundle outputs under builds/ (see builds/README.md)
 builds/*/

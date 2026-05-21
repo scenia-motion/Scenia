@@ -1,0 +1,4 @@
+[
+  { "slug": "ampersand", "label": "Ampersand", "project": "projects/ampersand" },
+  { "slug": "bouncing-ball", "label": "Bouncing Ball", "project": "projects/bouncing-ball" }
+]

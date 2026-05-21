@@ -36,6 +36,8 @@ projects/
   bouncing-ball/   Reference sketch using sketch-host
 builds/
   <name>/          Standalone static sites from `scenia-sketch bundle` (generated)
+site/
+  demos.json       Allowlist for the GitHub Pages demo gallery
 ```
 
 ## Commands
@@ -93,6 +95,8 @@ suitable for any static host. Default output: `builds/<sketch-folder-name>/`.
 | `pnpm run sketch -- bundle <sketch-dir> --out /tmp/my-site` | Bundle to a custom directory. |
 | `pnpm run preview:bundle <build-dir>` | Serve a build folder with Vite. Optional: `--port 5180` (default `5175`). |
 | `pnpm run smoke:bundle <path/to/sketch.bundle.json>` | Validate an existing bundle JSON (wasm header, assets, manifest). |
+| `pnpm run build:pages` | Bundle all demos in `site/demos.json`, assemble the GitHub Pages site into `_site/`. |
+| `pnpm run preview:pages` | Assemble `_site/` (local base `/`) and serve the gallery with Vite on port `5176`. |
 
 **MVP limitations:** JSON + base64 only (large files inflate size); no
 compression or binary container; assets must be listed in `sketch.json`
@@ -138,6 +142,41 @@ static build and local preview:
 pnpm run build:bundle projects/bouncing-ball
 pnpm run preview:bundle builds/bouncing-ball
 ```
+
+### Demo gallery (GitHub Pages)
+
+A static gallery at [https://dotloadmovie.github.io/scenia/](https://dotloadmovie.github.io/scenia/)
+wraps bundled sketches with a persistent header (Scenia title, GitHub link, demo
+dropdown). Sketches load in an iframe so bundle paths stay relative and unchanged.
+
+**One-time setup:** In the GitHub repository, open **Settings → Pages** and set
+**Build and deployment → Source** to **GitHub Actions**. After merging to `main`,
+the [Deploy GitHub Pages](.github/workflows/pages.yml) workflow builds allowlisted
+demos and publishes `_site/`.
+
+**Local preview:**
+
+```sh
+pnpm run build:pages
+pnpm run preview:pages
+```
+
+Open `http://localhost:5176/` (or `?demo=bouncing-ball` to deep-link). Local
+preview uses base `/`; production uses `/scenia/` (set via `PAGES_BASE` in CI).
+
+**Add a demo to the gallery:**
+
+1. Create or finish a sketch under `projects/<slug>/` with `sketch.json`.
+2. Add an entry to [`site/demos.json`](site/demos.json):
+
+   ```json
+   { "slug": "<slug>", "label": "My Sketch", "project": "projects/<slug>" }
+   ```
+
+3. Run `pnpm run build:pages` locally to verify, then merge to `main`.
+
+The allowlist controls which sketches are built in CI and listed in the dropdown.
+WIP sketches can be omitted until they are ready.
 
 ### Sketches (`sketch-host` + `scenia-sketch`)
 

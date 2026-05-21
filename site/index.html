@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="scenia-base" content="/" />
+    <title>Scenia</title>
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1 class="site-title">Scenia</h1>
+      <span class="site-header-spacer"></span>
+      <a id="github-link" href="https://github.com/dotloadmovie/scenia">GitHub</a>
+      <label>
+        <span class="visually-hidden">Demo</span>
+        <select id="demo-select" class="demo-select" aria-label="Select demo"></select>
+      </label>
+    </header>
+    <main class="site-main">
+      <iframe id="player" title="Sketch player" sandbox="allow-scripts allow-same-origin"></iframe>
+    </main>
+    <script type="module" src="site.js"></script>
+  </body>
+</html>

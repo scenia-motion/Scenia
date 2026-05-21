@@ -7,9 +7,11 @@
   "scripts": {
     "build": "pnpm -r build",
     "build:bundle": "node scripts/build-bundle.mjs",
+    "build:pages": "node scripts/build-all-bundles.mjs && node scripts/assemble-pages.mjs",
     "build:player": "pnpm --filter @scenia-runtime/runtime-player build",
     "dev": "pnpm run sketch dev",
     "preview:bundle": "node scripts/preview-bundle.mjs",
+    "preview:pages": "PAGES_BASE=/ node scripts/assemble-pages.mjs && vite preview _site --host 0.0.0.0 --port 5176",
     "sketch": "pnpm exec scenia-sketch",
     "smoke:bundle": "node scripts/smoke-bundle.mjs"
   },
