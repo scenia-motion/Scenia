@@ -101,6 +101,22 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  projects/nested-displayobject:
+    dependencies:
+      '@scenia-runtime/runtime-js':
+        specifier: workspace:*
+        version: link:../../packages/runtime-js
+      '@scenia-runtime/sketch-host':
+        specifier: workspace:*
+        version: link:../../packages/sketch-host
+    devDependencies:
+      '@scenia-runtime/runtime-as':
+        specifier: workspace:*
+        version: link:../../packages/runtime-as
+      assemblyscript:
+        specifier: ^0.28.9
+        version: 0.28.17
+
   projects/tween-demo:
     dependencies:
       '@scenia-runtime/runtime-js':

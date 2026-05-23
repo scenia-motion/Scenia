@@ -1,0 +1,19 @@
+{
+  "name": "@scenia-runtime/nested-displayobject",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Empty sketch scaffolded with scenia-sketch (see repository README).",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm exec scenia-sketch dev .",
+    "build": "pnpm exec scenia-sketch build ."
+  },
+  "dependencies": {
+    "@scenia-runtime/runtime-js": "workspace:*",
+    "@scenia-runtime/sketch-host": "workspace:*"
+  },
+  "devDependencies": {
+    "@scenia-runtime/runtime-as": "workspace:*",
+    "assemblyscript": "^0.28.9"
+  }
+}
