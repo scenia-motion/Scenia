@@ -101,7 +101,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  projects/dave-sketch:
+  projects/tween-demo:
     dependencies:
       '@scenia-runtime/runtime-js':
         specifier: workspace:*

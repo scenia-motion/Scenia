@@ -5,6 +5,9 @@ export { Sprite } from "./Sprite";
 export { Bitmap } from "./Bitmap";
 export { TextField, TextAlign } from "./TextField";
 export { Stage } from "./Stage";
+export { Ease, EaseFn } from "./tween/Ease";
+export { Tween, TweenOptions } from "./tween/Tween";
+export { TweenManager, getDefaultTweenManager } from "./tween/TweenManager";
 export { assetIdForPath } from "./assets";
 export {
   RENDER_KIND_BITMAP,

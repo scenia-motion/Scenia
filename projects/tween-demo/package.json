@@ -1,0 +1,20 @@
+{
+  "name": "@scenia-runtime/tween-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tween demo: animate a block with Ease.quadOut.",
+  "type": "module",
+  "scripts": {
+    "prepare-assets": "node scripts/write-block-png.mjs",
+    "dev": "pnpm exec scenia-sketch dev .",
+    "build": "pnpm exec scenia-sketch build ."
+  },
+  "dependencies": {
+    "@scenia-runtime/runtime-js": "workspace:*",
+    "@scenia-runtime/sketch-host": "workspace:*"
+  },
+  "devDependencies": {
+    "@scenia-runtime/runtime-as": "workspace:*",
+    "assemblyscript": "^0.28.9"
+  }
+}

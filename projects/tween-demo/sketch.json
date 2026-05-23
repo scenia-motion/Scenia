@@ -1,0 +1,20 @@
+{
+  "wasmUrl": "/main.wasm",
+  "canvas": {
+    "selector": "#stage",
+    "width": 640,
+    "height": 360
+  },
+  "runtime": {
+    "background": "#101827",
+    "assets": ["block.png"]
+  },
+  "assembly": {
+    "entry": "assembly/index.ts",
+    "config": "asconfig.json",
+    "target": "release"
+  },
+  "hooks": {
+    "preCompile": "pnpm run prepare-assets"
+  }
+}
