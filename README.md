@@ -230,6 +230,40 @@ AssemblyScript requires the explicit `<Main>` type argument for this method
 reference today. The intended ergonomic target is the classic AS3 shape without
 that type hint.
 
+### Tweening
+
+Property tweens run automatically when you call `stage.tick(deltaTime)` — the
+stage updates the default `TweenManager` before enter-frame events.
+
+```ts
+import { Ease, Tween, TweenOptions, TweenStatus } from "@scenia-runtime/runtime-as/as3";
+
+let opts = new TweenOptions();
+opts.x = 520;
+opts.duration = 2.0;
+opts.ease = Ease.quadOut;
+opts.delay = 0.3;
+opts.onComplete = (status: i32): void => {
+  if (status == TweenStatus.COMPLETE) {
+    // chain another tween
+  }
+};
+Tween.to(sprite, opts);
+```
+
+**`TweenOptions` fields:** `x`, `y`, `scaleX`, `scaleY`, `rotation`, `alpha`
+(use `NaN` to leave a property unchanged), `duration`, `delay`, `ease`, and
+`onComplete`. Delay counts down before the eased animation runs; any leftover
+frame time after the delay is applied to the first animation step.
+
+**`onComplete(status)`** runs once when the tween ends. `TweenStatus.COMPLETE`
+means the tween reached its target; `TweenStatus.CANCELLED` means `stop()` was
+called. Call `tween.stop()` to halt at the current interpolated values without
+snapping to the end state.
+
+See [`projects/tween-demo`](projects/tween-demo) for a chained out-and-back
+animation.
+
 The browser host in `runtime-js` loads the Wasm module, calls `update(dt)` every
 animation frame, reads a compact render list from Wasm memory, and draws bitmap
 commands to a Canvas2D context.

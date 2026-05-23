@@ -2,6 +2,13 @@ import { DisplayObject } from "../DisplayObject";
 import { Ease, EaseFn } from "./Ease";
 import { getDefaultTweenManager } from "./TweenManager";
 
+export class TweenStatus {
+  static readonly COMPLETE: i32 = 0;
+  static readonly CANCELLED: i32 = 1;
+}
+
+export type TweenCompleteCallback = (status: i32) => void;
+
 export class TweenOptions {
   x: f32 = NaN;
   y: f32 = NaN;
@@ -10,7 +17,9 @@ export class TweenOptions {
   rotation: f32 = NaN;
   alpha: f32 = NaN;
   duration: f32 = 1.0;
+  delay: f32 = 0;
   ease: EaseFn = Ease.linear;
+  onComplete: TweenCompleteCallback | null = null;
 }
 
 export class Tween {
@@ -19,7 +28,11 @@ export class Tween {
   readonly ease: EaseFn;
 
   elapsed: f32 = 0;
+  delay: f32 = 0;
   complete: bool = false;
+
+  private onComplete: TweenCompleteCallback | null = null;
+  private onCompleteInvoked: bool = false;
 
   private tweenX: bool = false;
   private tweenY: bool = false;
@@ -46,6 +59,8 @@ export class Tween {
     this.target = target;
     this.duration = options.duration;
     this.ease = options.ease;
+    this.delay = options.delay;
+    this.onComplete = options.onComplete;
 
     if (!isNaN(options.x)) {
       this.tweenX = true;
@@ -85,9 +100,28 @@ export class Tween {
     return tween;
   }
 
+  stop(): void {
+    if (this.complete) {
+      return;
+    }
+    this.complete = true;
+    this.invokeComplete(TweenStatus.CANCELLED);
+    getDefaultTweenManager().remove(this);
+  }
+
   update(dt: f32): void {
     if (this.complete) {
       return;
+    }
+
+    if (this.delay > 0) {
+      if (dt >= this.delay) {
+        dt -= this.delay;
+        this.delay = 0;
+      } else {
+        this.delay -= dt;
+        return;
+      }
     }
 
     this.elapsed += dt;
@@ -116,6 +150,17 @@ export class Tween {
     if (this.elapsed >= this.duration) {
       this.snapToEnd();
       this.complete = true;
+      this.invokeComplete(TweenStatus.COMPLETE);
+    }
+  }
+
+  private invokeComplete(status: i32): void {
+    if (this.onCompleteInvoked) {
+      return;
+    }
+    this.onCompleteInvoked = true;
+    if (this.onComplete != null) {
+      this.onComplete(status);
     }
   }
 

@@ -6,7 +6,7 @@ export { Bitmap } from "./Bitmap";
 export { TextField, TextAlign } from "./TextField";
 export { Stage } from "./Stage";
 export { Ease, EaseFn } from "./tween/Ease";
-export { Tween, TweenOptions } from "./tween/Tween";
+export { Tween, TweenOptions, TweenStatus, TweenCompleteCallback } from "./tween/Tween";
 export { TweenManager, getDefaultTweenManager } from "./tween/TweenManager";
 export { assetIdForPath } from "./assets";
 export {

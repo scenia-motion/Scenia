@@ -7,6 +7,15 @@ export class TweenManager {
     this.tweens.push(tween);
   }
 
+  remove(tween: Tween): void {
+    for (let i = 0; i < this.tweens.length; i++) {
+      if (this.tweens[i] == tween) {
+        this.tweens.splice(i, 1);
+        return;
+      }
+    }
+  }
+
   update(dt: f32): void {
     for (let i = 0; i < this.tweens.length; i++) {
       this.tweens[i].update(dt);
