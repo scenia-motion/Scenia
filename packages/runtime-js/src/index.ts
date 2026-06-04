@@ -5,6 +5,17 @@ import {
   type LoadSketchBundleOptions,
   type SketchBundle
 } from "./bundle.js";
+import {
+  DEFAULT_MAX_FRAME_DELTA_SECONDS,
+  RuntimeTimeline
+} from "./timeline.js";
+
+export {
+  DEFAULT_MAX_FRAME_DELTA_SECONDS,
+  RuntimeTimeline,
+  clampFrameDelta
+} from "./timeline.js";
+export type { TimelineFrameCallback, TimelineTickCallback } from "./timeline.js";
 
 export const RENDER_KIND_BITMAP = 1;
 export const RENDER_KIND_TEXT = 2;
@@ -102,12 +113,12 @@ export class WasmCanvasRuntime {
   readonly canvas: HTMLCanvasElement;
   readonly context: CanvasRenderingContext2D;
   readonly exports: WasmRuntimeExports;
+  readonly timeline = new RuntimeTimeline();
 
   private readonly images = new Map<number, HTMLImageElement>();
   private readonly background: string;
   private readonly debugPointer: boolean;
-  private animationFrameId: number | null = null;
-  private lastTimestamp = 0;
+  private readonly unsubscribeWasmTick: () => void;
   private pointerBridgeAttached = false;
   private pointerBridgeLogged = false;
   private readonly pointerDownHandler = (event: PointerEvent): void => {
@@ -131,6 +142,10 @@ export class WasmCanvasRuntime {
     this.exports = exports;
     this.background = background;
     this.debugPointer = debugPointer;
+    this.unsubscribeWasmTick = this.timeline.onTick((deltaTime) => {
+      this.exports.update(deltaTime);
+      this.timeline.markDirty();
+    });
   }
 
   static async load(options: RuntimeHostOptions): Promise<WasmCanvasRuntime> {
@@ -169,28 +184,42 @@ export class WasmCanvasRuntime {
   }
 
   start(): void {
-    if (this.animationFrameId != null) {
+    if (this.timeline.running) {
       return;
     }
 
-    this.lastTimestamp = performance.now();
     this.attachPointerBridge();
-    this.animationFrameId = requestAnimationFrame(this.frame);
+    this.timeline.start(() => this.flushDraw());
   }
 
   stop(): void {
-    if (this.animationFrameId == null) {
+    if (!this.timeline.running) {
       return;
     }
 
-    cancelAnimationFrame(this.animationFrameId);
-    this.animationFrameId = null;
+    this.timeline.stop();
     this.detachPointerBridge();
   }
 
+  pause(): void {
+    this.timeline.pause();
+  }
+
+  resume(): void {
+    this.timeline.resume();
+  }
+
+  get isPaused(): boolean {
+    return this.timeline.paused;
+  }
+
   step(deltaTime: number): void {
-    this.exports.update(deltaTime);
-    this.draw();
+    let dt = this.timeline.clampDelta(deltaTime);
+    if (dt > 0) {
+      this.exports.update(dt);
+      this.timeline.markDirty();
+    }
+    this.flushDraw();
   }
 
   readRenderList(): RenderCommand[] {
@@ -321,13 +350,12 @@ export class WasmCanvasRuntime {
     return readAssemblyScriptString(this.exports.memory, getPtr(index));
   }
 
-  private readonly frame = (timestamp: number): void => {
-    let deltaTime = (timestamp - this.lastTimestamp) / 1000;
-    this.lastTimestamp = timestamp;
-
-    this.step(deltaTime);
-    this.animationFrameId = requestAnimationFrame(this.frame);
-  };
+  private flushDraw(): void {
+    if (this.timeline.isDirty) {
+      this.draw();
+      this.timeline.clearDirty();
+    }
+  }
 
   private pushAssetDimensionsToWasm(assetId: number, width: number, height: number): void {
     let register = this.exports.registerAssetDimensions;

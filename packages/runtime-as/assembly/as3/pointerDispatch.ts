@@ -1,5 +1,6 @@
 import { PointerEvent } from "./Event";
 import { hitTestStage, lastPointerHitLocalX, lastPointerHitLocalY } from "./pointerHitTest";
+import { getDefaultRuntimeTimeline } from "./RuntimeTimeline";
 import { Stage } from "./Stage";
 
 export const POINTER_KIND_DOWN: i32 = 1;
@@ -12,7 +13,6 @@ export let lastPointerStageY: f32 = 0;
 
 export type StagePointerListener = (stageX: f32, stageY: f32, kind: i32) => void;
 
-let boundStage: Stage | null = null;
 let stagePointerListener: StagePointerListener | null = null;
 
 export function setStagePointerListener(listener: StagePointerListener | null): void {
@@ -20,7 +20,7 @@ export function setStagePointerListener(listener: StagePointerListener | null): 
 }
 
 export function bindStage(stage: Stage): void {
-  boundStage = stage;
+  getDefaultRuntimeTimeline().setStage(stage);
 }
 
 export function __debugLastPointerHitAssetId(): i32 {
@@ -28,7 +28,7 @@ export function __debugLastPointerHitAssetId(): i32 {
 }
 
 export function dispatchPointerFromHost(stageX: f32, stageY: f32, kind: i32): void {
-  let stage = boundStage;
+  let stage = getDefaultRuntimeTimeline().getStage();
   lastPointerDispatchHitAssetId = -1;
   lastPointerStageX = stageX;
   lastPointerStageY = stageY;

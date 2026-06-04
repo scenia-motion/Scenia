@@ -28,7 +28,7 @@ export class DisplayObject extends EventDispatcher {
     let node: DisplayObject | null = this;
     while (node != null) {
       if (node instanceof Stage) {
-        return node;
+        return changetype<Stage>(node);
       }
       node = node.parent;
     }

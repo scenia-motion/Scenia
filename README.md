@@ -230,10 +230,21 @@ AssemblyScript requires the explicit `<Main>` type argument for this method
 reference today. The intended ergonomic target is the classic AS3 shape without
 that type hint.
 
+### Frame timeline
+
+The browser host runs one `requestAnimationFrame` loop via `RuntimeTimeline` in
+`runtime-js` (pause/resume, delta clamp, render dirty flag). Each frame it calls
+Wasm `update(deltaTime)`, which should call `stage.tick(deltaTime)`.
+
+On the Wasm side, `RuntimeTimeline` (or `stage.tick` as a shorthand) runs the
+default `TweenManager`, dispatches `Event.ENTER_FRAME` to listeners on the
+display list, then rebuilds the render list. Large frame gaps are clamped
+(default 0.1s) on both host and Wasm so tweens do not jump after tab switches.
+
 ### Tweening
 
-Property tweens run automatically when you call `stage.tick(deltaTime)` — the
-stage updates the default `TweenManager` before enter-frame events.
+Property tweens run automatically when the shared timeline ticks — the
+`TweenManager` updates before enter-frame events.
 
 ```ts
 import { Ease, Tween, TweenOptions, TweenStatus } from "@scenia-runtime/runtime-as/as3";
@@ -261,12 +272,12 @@ means the tween reached its target; `TweenStatus.CANCELLED` means `stop()` was
 called. Call `tween.stop()` to halt at the current interpolated values without
 snapping to the end state.
 
-See [`projects/tween-demo`](projects/tween-demo) for a chained out-and-back
-animation.
+See [`projects/tween-demo`](projects/tween-demo) for multi-tween, enter-frame, and
+pause/resume controls.
 
-The browser host in `runtime-js` loads the Wasm module, calls `update(dt)` every
-animation frame, reads a compact render list from Wasm memory, and draws bitmap
-commands to a Canvas2D context.
+The browser host in `runtime-js` loads the Wasm module, advances the shared
+timeline each animation frame, reads a compact render list from Wasm memory, and
+draws when the timeline is dirty.
 
 ## Wasm / JS bridge
 
