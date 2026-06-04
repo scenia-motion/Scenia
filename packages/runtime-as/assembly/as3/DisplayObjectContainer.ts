@@ -32,13 +32,19 @@ export class DisplayObjectContainer extends DisplayObject {
   }
 
   __broadcastEnterFrame(event: Event): void {
-    this.dispatchEvent(event);
+    if (this.stage != null && this.hasEventListener(Event.ENTER_FRAME)) {
+      this.dispatchEvent(event);
+    }
 
     for (let i = 0; i < this.children.length; i++) {
       let child = this.children[i];
+      if (child.stage == null) {
+        continue;
+      }
+
       if (child instanceof DisplayObjectContainer) {
         (child as DisplayObjectContainer).__broadcastEnterFrame(event);
-      } else {
+      } else if (child.hasEventListener(Event.ENTER_FRAME)) {
         child.dispatchEvent(event);
       }
     }

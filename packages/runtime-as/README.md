@@ -22,9 +22,11 @@ not implemented yet).
 
 ## Rendering contract
 
-`Stage.tick(deltaTime)` dispatches `Event.ENTER_FRAME` through the display tree
-and rebuilds a flat render list. JavaScript reads the render list directly from
-Wasm memory through:
+`bindStage(stage)` registers the stage on the default `RuntimeTimeline`.
+`stage.tick(deltaTime)` is a shorthand for `getDefaultRuntimeTimeline().tick(deltaTime)`,
+which updates tweens, dispatches `Event.ENTER_FRAME` (to objects on stage with
+listeners), clamps large deltas, and rebuilds the flat render list. JavaScript
+reads the render list directly from Wasm memory through:
 
 - `getRenderListPtr()`
 - `getRenderListLength()`

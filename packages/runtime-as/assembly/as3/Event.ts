@@ -66,6 +66,15 @@ export class EventDispatcher {
     }
   }
 
+  hasEventListener(type: string): bool {
+    for (let i = 0; i < this.listeners.length; i++) {
+      if (this.listeners[i].type == type) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private notifyListeners(event: Event): void {
     let snapshot = this.listeners.slice(0);
     for (let i = 0; i < snapshot.length; i++) {

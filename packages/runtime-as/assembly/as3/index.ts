@@ -5,6 +5,12 @@ export { Sprite } from "./Sprite";
 export { Bitmap } from "./Bitmap";
 export { TextField, TextAlign } from "./TextField";
 export { Stage } from "./Stage";
+export {
+  RuntimeTimeline,
+  DEFAULT_MAX_FRAME_DELTA,
+  clampDelta,
+  getDefaultRuntimeTimeline
+} from "./RuntimeTimeline";
 export { Ease, EaseFn } from "./tween/Ease";
 export { Tween, TweenOptions, TweenStatus, TweenCompleteCallback } from "./tween/Tween";
 export { TweenManager, getDefaultTweenManager } from "./tween/TweenManager";

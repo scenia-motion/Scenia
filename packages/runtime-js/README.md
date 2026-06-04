@@ -8,9 +8,11 @@ TypeScript browser host for Wasm modules built with
 - Own the `<canvas>` and Canvas2D context.
 - Load the Wasm module.
 - Load bitmap assets.
-- Call the Wasm `update(dt)` export on every animation frame.
+- Run one `requestAnimationFrame` loop via `RuntimeTimeline` (pause/resume, delta
+  clamp, tick callbacks).
+- Call the Wasm `update(dt)` export each tick when not paused.
 - Read the render list from Wasm memory.
-- Draw bitmap and text commands to Canvas2D.
+- Draw bitmap and text commands to Canvas2D when the timeline is dirty.
 
 ## Boundary contract
 
@@ -50,7 +52,12 @@ const runtime = await WasmCanvasRuntime.load({
 });
 
 runtime.start();
+runtime.pause();
+runtime.resume();
 ```
+
+`DEFAULT_MAX_FRAME_DELTA_SECONDS` (0.1) caps per-frame `dt` after tab blur or
+debugger pauses. `runtime.step(dt)` advances one frame manually (also clamped).
 
 Asset ids are computed from bitmap paths with `assetIdForPath(path)`. The same
 hash exists in AssemblyScript, so `new Bitmap("ball.png")` can be matched to the
