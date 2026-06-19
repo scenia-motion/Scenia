@@ -285,16 +285,18 @@ The bridge is deliberately small:
 
 - Wasm exports `update(deltaTime)`.
 - Wasm exports `getRenderListPtr()` and `getRenderListLength()` (float slot count).
-- Sketches with text also export `getRenderStringPtr(index)` for the per-frame
+- Sketches with text or vector shapes also export `getRenderStringPtr(index)` for the per-frame
   string pool.
 - The render list is a contiguous `Float64Array` in Wasm memory. Commands are
   variable-length; the host reads `kind` and advances by stride:
   - **Bitmap** (`kind = 1`, 9 slots): asset id + affine + alpha
   - **Text** (`kind = 2`, 19 slots): display object id, string pool indices,
     affine + alpha, font metrics, layout flags
+  - **Shape** (`kind = 3`, 15 slots): display object id, SVG path index,
+    fill/stroke colors and alpha, stroke width, affine + alpha
 
 Bitmap asset ids are deterministic hashes of paths (no string marshaling).
-`TextField` strings are interned each frame and read from Wasm by index.
+`TextField` and `Shape` strings are interned each frame and read from Wasm by index.
 
 ### TextField (display-only)
 
@@ -314,6 +316,25 @@ Rendering uses Canvas2D `fillText` on the host. There is no text input, rich
 text, or embedded font loading yet. See package READMEs for supported properties
 and layout flags (`multiline`, `wordWrap`).
 
+### Shape / Graphics
+
+```ts
+const tri = new Shape();
+tri.graphics.beginFill(0x4488ff);
+tri.graphics.moveTo(0, -40);
+tri.graphics.lineTo(35, 30);
+tri.graphics.lineTo(-35, 30);
+tri.graphics.endFill();
+tri.x = 200;
+tri.y = 180;
+addChild(tri);
+```
+
+Vector geometry is serialized to an SVG path `d` string in Wasm and drawn on the
+host with Canvas2D `Path2D`. See [`projects/vector-demo`](projects/vector-demo)
+for tweens on shapes nested in sprites. Vector pointer hit-testing is not
+implemented yet (bitmap-only today).
+
 ## Current constraints
 
 - Minimal API surface only.
@@ -326,5 +347,5 @@ and layout flags (`multiline`, `wordWrap`).
 
 ## Next implementation milestone
 
-Vector graphics via SVG, plus richer text (input, embedded fonts, and optional
-non-Canvas2D backends).
+Richer text (input, embedded fonts, and optional non-Canvas2D backends), bezier
+curves in `Graphics`, and `Sprite.graphics` as follow-ups to the vector MVP.

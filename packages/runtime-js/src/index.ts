@@ -19,8 +19,10 @@ export type { TimelineFrameCallback, TimelineTickCallback } from "./timeline.js"
 
 export const RENDER_KIND_BITMAP = 1;
 export const RENDER_KIND_TEXT = 2;
+export const RENDER_KIND_SHAPE = 3;
 export const RENDER_BITMAP_STRIDE = 9;
 export const RENDER_TEXT_STRIDE = 19;
+export const RENDER_SHAPE_STRIDE = 15;
 /** @deprecated Use RENDER_BITMAP_STRIDE */
 export const RENDER_LIST_STRIDE = RENDER_BITMAP_STRIDE;
 
@@ -99,7 +101,25 @@ export interface TextRenderCommand {
   wordWrap: boolean;
 }
 
-export type RenderCommand = BitmapRenderCommand | TextRenderCommand;
+export interface ShapeRenderCommand {
+  kind: typeof RENDER_KIND_SHAPE;
+  displayObjectId: number;
+  path: string;
+  fillColor: number;
+  fillAlpha: number;
+  strokeColor: number;
+  strokeAlpha: number;
+  strokeWidth: number;
+  a: number;
+  b: number;
+  c: number;
+  d: number;
+  tx: number;
+  ty: number;
+  alpha: number;
+}
+
+export type RenderCommand = BitmapRenderCommand | TextRenderCommand | ShapeRenderCommand;
 
 export function assetIdForPath(path: string): number {
   let hash = 0;
@@ -267,6 +287,25 @@ export class WasmCanvasRuntime {
           wordWrap: memory[offset + 18] !== 0
         });
         offset += RENDER_TEXT_STRIDE;
+      } else if (kind === RENDER_KIND_SHAPE) {
+        commands.push({
+          kind: RENDER_KIND_SHAPE,
+          displayObjectId: memory[offset + 1],
+          path: this.readRenderString(memory[offset + 2]),
+          fillColor: memory[offset + 3],
+          fillAlpha: memory[offset + 4],
+          strokeColor: memory[offset + 5],
+          strokeAlpha: memory[offset + 6],
+          strokeWidth: memory[offset + 7],
+          a: memory[offset + 8],
+          b: memory[offset + 9],
+          c: memory[offset + 10],
+          d: memory[offset + 11],
+          tx: memory[offset + 12],
+          ty: memory[offset + 13],
+          alpha: memory[offset + 14]
+        });
+        offset += RENDER_SHAPE_STRIDE;
       } else {
         break;
       }
@@ -291,6 +330,8 @@ export class WasmCanvasRuntime {
         this.drawBitmap(command);
       } else if (command.kind === RENDER_KIND_TEXT) {
         this.drawTextField(command);
+      } else if (command.kind === RENDER_KIND_SHAPE) {
+        this.drawShape(command);
       }
     }
 
@@ -337,6 +378,29 @@ export class WasmCanvasRuntime {
         break;
       }
       context.fillText(lines[i], x, y);
+    }
+
+    context.restore();
+  }
+
+  private drawShape(command: ShapeRenderCommand): void {
+    let context = this.context;
+    let path = new Path2D(command.path);
+    context.save();
+    context.setTransform(command.a, command.b, command.c, command.d, command.tx, command.ty);
+    let baseAlpha = clamp(command.alpha, 0, 1);
+
+    if (command.fillAlpha >= 0) {
+      context.globalAlpha = baseAlpha * clamp(command.fillAlpha, 0, 1);
+      context.fillStyle = colorToCss(command.fillColor);
+      context.fill(path);
+    }
+
+    if (command.strokeWidth > 0) {
+      context.globalAlpha = baseAlpha * clamp(command.strokeAlpha, 0, 1);
+      context.strokeStyle = colorToCss(command.strokeColor);
+      context.lineWidth = command.strokeWidth;
+      context.stroke(path);
     }
 
     context.restore();

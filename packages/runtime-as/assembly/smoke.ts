@@ -1,5 +1,6 @@
 import {
   Ease,
+  Shape,
   Stage,
   TextField,
   Tween,
@@ -8,8 +9,12 @@ import {
   bindStage,
   clampDelta,
   getDefaultRuntimeTimeline,
-  getRenderListLength
+  getRenderListLength,
+  getRenderStringPtr,
+  RENDER_KIND_SHAPE,
+  RENDER_SHAPE_STRIDE
 } from "./as3";
+import { __renderListKindAt } from "./as3/renderList";
 
 let completeStatus: i32 = -1;
 
@@ -147,6 +152,33 @@ export function smokeClampHelper(): i32 {
   return 0;
 }
 
+export function smokeShapeRender(): i32 {
+  let stage = new Stage(1, 1);
+  bindStage(stage);
+
+  let tri = new Shape();
+  tri.graphics.beginFill(0x4488ff);
+  tri.graphics.moveTo(0, -40);
+  tri.graphics.lineTo(35, 30);
+  tri.graphics.lineTo(-35, 30);
+  tri.graphics.endFill();
+  stage.addChild(tri);
+
+  stage.tick(0.1);
+
+  if (getRenderListLength() != RENDER_SHAPE_STRIDE) {
+    return -11;
+  }
+  if (__renderListKindAt(0) != RENDER_KIND_SHAPE as f64) {
+    return -12;
+  }
+  if (getRenderStringPtr(0) == 0) {
+    return -13;
+  }
+
+  return 0;
+}
+
 export function smokeAll(): i32 {
   let result = smokeTweenComplete();
   if (result < 0) {
@@ -164,6 +196,11 @@ export function smokeAll(): i32 {
   }
 
   result = smokePausedTimeline();
+  if (result != 0) {
+    return result;
+  }
+
+  result = smokeShapeRender();
   if (result != 0) {
     return result;
   }
