@@ -2,5 +2,6 @@
   { "slug": "ampersand", "label": "Ampersand", "project": "projects/ampersand" },
   { "slug": "bouncing-ball", "label": "Bouncing Ball", "project": "projects/bouncing-ball" },
   { "slug": "tween-demo", "label": "Tween Demo", "project": "projects/tween-demo" },
-  { "slug": "nested-displayobject", "label": "Nested DisplayObject", "project": "projects/nested-displayobject" }
+  { "slug": "nested-displayobject", "label": "Nested DisplayObject", "project": "projects/nested-displayobject" },
+  { "slug": "vector-demo", "label": "Vector Demo", "project": "projects/vector-demo" }
 ]

@@ -1,0 +1,17 @@
+{
+  "wasmUrl": "/main.wasm",
+  "canvas": {
+    "selector": "#stage",
+    "width": 640,
+    "height": 360
+  },
+  "runtime": {
+    "background": "#101827",
+    "assets": []
+  },
+  "assembly": {
+    "entry": "assembly/index.ts",
+    "config": "asconfig.json",
+    "target": "release"
+  }
+}

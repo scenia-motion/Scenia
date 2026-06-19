@@ -11,6 +11,7 @@ coding environment.
 - `DisplayObjectContainer`
 - `Sprite`
 - `Bitmap`
+- `Shape` / `Graphics`
 - `TextField`
 - `Stage`
 
@@ -47,10 +48,48 @@ the host walks the buffer using each record's `kind` field.
  a, b, c, d, tx, ty, alpha, fontSize, color, align, width, height, multiline, wordWrap]
 ```
 
+**Shape** (`kind = 3`, stride 15):
+
+```txt
+[kind, displayObjectId, pathIndex, fillColor, fillAlpha, strokeColor, strokeAlpha,
+ strokeWidth, a, b, c, d, tx, ty, alpha]
+```
+
+Sentinels: `fillAlpha = -1` means no fill; `strokeWidth = 0` means no stroke.
+The SVG path `d` string at `pathIndex` is built from `Graphics` drawing commands
+in local space; the world affine is applied at collect time.
+
 String payloads are interned per frame into a small Wasm string pool. The host
 reads them through `getRenderStringPtr(index)` (same AssemblyScript string
 layout as the loader). Invisible objects are culled before they enter the render
 list.
+
+## Shape / Graphics
+
+Vector drawing via an SVG path serialized each frame:
+
+```ts
+const tri = new Shape();
+tri.graphics.beginFill(0x4488ff);
+tri.graphics.moveTo(0, -40);
+tri.graphics.lineTo(35, 30);
+tri.graphics.lineTo(-35, 30);
+tri.graphics.endFill();
+tri.x = 200;
+tri.y = 180;
+stage.addChild(tri);
+```
+
+Supported `Graphics` methods: `clear`, `beginFill`, `endFill`, `lineStyle`,
+`moveTo`, `lineTo`, `drawRect`, `drawCircle` (24-segment approximation).
+Geometry is in local space; transforms inherit from the display list like
+`Bitmap` and `TextField`. Empty graphics (after `clear` or with no draw
+commands) are omitted from the render list.
+
+**Limitations:** no external SVG loading, gradients, or bezier curves yet;
+`Graphics` is on `Shape` only (not `Sprite`); vector pointer hit-testing is not
+implemented. Sketches that use `Shape` or `TextField` must export
+`getRenderStringPtr()` from their Wasm entry module.
 
 ## TextField
 
@@ -74,8 +113,7 @@ Supported properties: `text`, `fontFamily`, `fontSize`, `fontWeight`, `color`,
 
 **Limitations:** no text input, caret, selection, rich/HTML text, embedded fonts,
 or non-Canvas2D backends. Font names are passed to the browser as CSS font
-strings only (no asset loading). Sketches that use text must export
-`getRenderStringPtr()` from their Wasm entry module.
+strings only (no asset loading).
 
 ## Build
 

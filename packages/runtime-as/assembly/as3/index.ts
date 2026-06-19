@@ -3,6 +3,8 @@ export { DisplayObject } from "./DisplayObject";
 export { DisplayObjectContainer } from "./DisplayObjectContainer";
 export { Sprite } from "./Sprite";
 export { Bitmap } from "./Bitmap";
+export { Graphics } from "./Graphics";
+export { Shape } from "./Shape";
 export { TextField, TextAlign } from "./TextField";
 export { Stage } from "./Stage";
 export {
@@ -18,8 +20,10 @@ export { assetIdForPath } from "./assets";
 export {
   RENDER_KIND_BITMAP,
   RENDER_KIND_TEXT,
+  RENDER_KIND_SHAPE,
   RENDER_BITMAP_STRIDE,
   RENDER_TEXT_STRIDE,
+  RENDER_SHAPE_STRIDE,
   RENDER_LIST_STRIDE,
   clearRenderList,
   collectStage,

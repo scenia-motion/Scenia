@@ -133,6 +133,22 @@ importers:
         specifier: ^0.28.9
         version: 0.28.17
 
+  projects/vector-demo:
+    dependencies:
+      '@scenia-runtime/runtime-js':
+        specifier: workspace:*
+        version: link:../../packages/runtime-js
+      '@scenia-runtime/sketch-host':
+        specifier: workspace:*
+        version: link:../../packages/sketch-host
+    devDependencies:
+      '@scenia-runtime/runtime-as':
+        specifier: workspace:*
+        version: link:../../packages/runtime-as
+      assemblyscript:
+        specifier: ^0.28.9
+        version: 0.28.17
+
 packages:
 
   '@esbuild/aix-ppc64@0.27.7':

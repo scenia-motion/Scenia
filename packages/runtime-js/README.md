@@ -12,12 +12,12 @@ TypeScript browser host for Wasm modules built with
   clamp, tick callbacks).
 - Call the Wasm `update(dt)` export each tick when not paused.
 - Read the render list from Wasm memory.
-- Draw bitmap and text commands to Canvas2D when the timeline is dirty.
+- Draw bitmap, text, and shape commands to Canvas2D when the timeline is dirty.
 
 ## Boundary contract
 
 The host expects Wasm exports named `update(deltaTime)`, `getRenderListPtr()`,
-and `getRenderListLength()`. Sketches with `TextField` nodes should also export
+and `getRenderListLength()`. Sketches with `TextField` or `Shape` nodes should also export
 `getRenderStringPtr(index)` so the host can resolve interned strings.
 
 Render commands are read from a contiguous `Float64Array`. The host walks the
@@ -28,11 +28,15 @@ Bitmap (kind 1): [kind, assetId, a, b, c, d, tx, ty, alpha]
 Text   (kind 2): [kind, displayObjectId, textIndex, fontFamilyIndex, fontWeightIndex,
                   a, b, c, d, tx, ty, alpha, fontSize, color, align, width, height,
                   multiline, wordWrap]
+Shape  (kind 3): [kind, displayObjectId, pathIndex, fillColor, fillAlpha, strokeColor,
+                  strokeAlpha, strokeWidth, a, b, c, d, tx, ty, alpha]
 ```
 
 Bitmaps use `setTransform` + `drawImage`. Text uses Canvas2D `fillText` with
 `font`, `fillStyle`, `textBaseline = "top"`, and alignment from `TextAlign`.
-Multiline without wrap splits on `\n`; with `wordWrap`, lines are broken using
+Shapes use `Path2D` with the interned SVG `d` string. Fill is drawn when
+`fillAlpha >= 0`; stroke when `strokeWidth > 0`. Colors are `0xRRGGBB`; alpha
+combines object alpha with fill/stroke alpha at draw time. Multiline without wrap splits on `\n`; with `wordWrap`, lines are broken using
 `measureText` and an approximate line height of `fontSize * 1.2`. Text is
 clipped to `width` × `height` when both are positive.
 
